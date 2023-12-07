@@ -1,6 +1,8 @@
-﻿namespace DirectumCommunity.Services;
+﻿using DirectumCommunity.Models;
+
+namespace DirectumCommunity.Services;
 
 public interface IDirectumService
 {
-    public Task GetAllPersons();
+    public Task<List<Employee>> GetAllPersons();
 }

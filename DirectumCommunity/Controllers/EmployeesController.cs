@@ -18,8 +18,8 @@ public class EmployeesController : Controller
 
     public async Task<IActionResult> Index()
     {
-        await _directumService.GetAllPersons();
-        var list = new List<Employee>()
+        var list = await _directumService.GetAllPersons();
+        /*var list = new List<Employee>()
         {
             new ()
             {
@@ -69,7 +69,7 @@ public class EmployeesController : Controller
                 Department = "Отдел продаж",
                 Position = "менеджер по продажам"
             },
-        };
+        };*/
         ViewBag.Title = "Наши сотрудники";
         return View(list);
     }

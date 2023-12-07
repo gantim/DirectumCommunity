@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using DirectumCommunity.Models;
 using Simple.OData.Client;
 
 namespace DirectumCommunity.Services;
@@ -20,7 +21,7 @@ public class DirectumService : IDirectumService
         _password = password;
     }
 
-    public async Task GetAllPersons()
+    public async Task<List<Employee>> GetAllPersons()
     {
         var odataClientSettings = new ODataClientSettings(new Uri(_host));
 
@@ -32,8 +33,32 @@ public class DirectumService : IDirectumService
         var odataClient = new ODataClient(odataClientSettings);
         
         var associatedApplications = await odataClient.FindEntriesAsync("IPersons");
+
+        var employees = new List<Employee>();
+
         foreach (var associatedApplication in associatedApplications)
-        foreach (var property in associatedApplication)
-            Console.WriteLine($"{property.Key}: {property.Value}");
+        {
+            foreach (var property in associatedApplication)
+            {
+                var employee = new Employee();
+                employee.Department = "Отдел продаж";
+                employee.Position = "менеджер по продажам";
+                
+                switch (property.Key)
+                {
+                    case "FirstName":
+                        employee.FirstName = property.Value.ToString();
+                        break;
+                    case "LastName":
+                        employee.LastName = property.Value.ToString();
+                        break;
+                    case "MiddleName":
+                        employee.Patronymic = property.Value.ToString();
+                        break;
+                }
+            }
+        }
+
+        return employees;
     }
 }
