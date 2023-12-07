@@ -1,22 +1,71 @@
-html {
-  font-size: 14px;
+.separator {
+  border-right: 2px solid #000000;
+  height: 100vh;
+  max-width: 2px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.sidebar {
+  width: 300px; /* Устанавливаем желаемую ширину */
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.sidebar-sticky {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: left;
+  height: 100vh;
 }
 
-html {
+.nav-item {
+  width: 100%;
+}
+
+.nav-link {
+  color: #000000;
+  text-align: left;
+}
+
+.iconClass{
   position: relative;
-  min-height: 100%;
+}
+.iconClass span{
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
 }
 
-body {
-  margin-bottom: 60px;
+.circle-text {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ff8600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  margin-right: 20px;
+  color: #ffffff;
+}
+
+.circle-text-inner {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+body, .container-fluid, h1, a, span {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.custom-btn {
+  background-color: #FF8600D9;
+  color: white;
+  border: none;
+}
+
+.custom-btn:hover {
+  background-color: #FF8600;
+  color: white;
 }

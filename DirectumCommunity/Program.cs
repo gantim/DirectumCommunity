@@ -1,9 +1,21 @@
+using DirectumCommunity.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Ниже подключаем все сервисы(типа базы данных и т.п., как это сделать можно спросить у гпт)
 builder.Services.AddControllersWithViews();
+
+
+
+builder.Services.AddTransient<IDirectumService>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var host = configuration["DirectumRxConfig:Host"];
+    var login = configuration["DirectumRxConfig:Login"];
+    var password = configuration["DirectumRxConfig:Password"];
+    return new DirectumService(host, login, password);
+});
 
 var app = builder.Build();
 
@@ -30,6 +42,6 @@ app.UseAuthorization();
 // тут указывается домашняя страница сайта контроллер директума юзается и иднекс из вью/директум/index
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Directum}/{action=Index}/{id?}");
+    pattern: "{controller=Employees}/{action=Index}/{id?}");
 
 app.Run();
