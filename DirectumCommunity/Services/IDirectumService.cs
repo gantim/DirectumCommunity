@@ -4,5 +4,5 @@ namespace DirectumCommunity.Services;
 
 public interface IDirectumService
 {
-    public Task<List<Employee>> GetAllPersons();
+    public Task GetAllPersons();
 }

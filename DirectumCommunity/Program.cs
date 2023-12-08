@@ -6,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Ниже подключаем все сервисы(типа базы данных и т.п., как это сделать можно спросить у гпт)
 builder.Services.AddControllersWithViews();
 
-
-
 builder.Services.AddTransient<IDirectumService>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();

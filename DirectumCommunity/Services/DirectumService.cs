@@ -21,7 +21,7 @@ public class DirectumService : IDirectumService
         _password = password;
     }
 
-    public async Task<List<Employee>> GetAllPersons()
+    public async Task GetAllPersons()
     {
         var odataClientSettings = new ODataClientSettings(new Uri(_host));
 
@@ -31,34 +31,23 @@ public class DirectumService : IDirectumService
             message.Headers.Add("Authorization", "Basic " + authenticationHeaderValue);
         };
         var odataClient = new ODataClient(odataClientSettings);
-        
-        var associatedApplications = await odataClient.FindEntriesAsync("IPersons");
+        var persons = await odataClient.For<Person>().FindEntriesAsync();
 
-        var employees = new List<Employee>();
+        await using (var db = new ApplicationDbContext())
+        {
+            await db.AddRangeAsync(persons);
+            await db.SaveChangesAsync();
+        }
+        
+        /*var associatedApplications = await odataClient.FindEntriesAsync("IPersons");
 
         foreach (var associatedApplication in associatedApplications)
         {
             foreach (var property in associatedApplication)
             {
-                var employee = new Employee();
-                employee.Department = "Отдел продаж";
-                employee.Position = "менеджер по продажам";
                 
-                switch (property.Key)
-                {
-                    case "FirstName":
-                        employee.FirstName = property.Value.ToString();
-                        break;
-                    case "LastName":
-                        employee.LastName = property.Value.ToString();
-                        break;
-                    case "MiddleName":
-                        employee.Patronymic = property.Value.ToString();
-                        break;
-                }
             }
-        }
-
-        return employees;
+        }*/
+        
     }
 }
