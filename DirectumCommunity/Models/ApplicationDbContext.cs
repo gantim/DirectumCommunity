@@ -5,11 +5,10 @@ namespace DirectumCommunity.Models;
 public sealed class ApplicationDbContext : DbContext
 {
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<JobTitle> JobTitles => Set<JobTitle>();
     public DbSet<Meeting> Meetings => Set<Meeting>();
     public DbSet<Person> Persons => Set<Person>();
     public DbSet<Employee> Employees => Set<Employee>();
-    
-    public ApplicationDbContext() => Database.EnsureCreated();
  
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
