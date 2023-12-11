@@ -1,70 +1,109 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - DirectumCommunity</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="container-fluid">
     <div class="row no-gutters">
-      <!-- Sidebar -->
-      <nav class="col-md-2 sidebar">
-        <div class="sidebar-sticky">
-          <!-- Логотип -->
-          <div class="sidebar-header text-center py-4">
-            <img src="~/images/DirectumRxLogo.svg" alt="Logo"/>
-          </div>
-          <!-- Пункты меню -->
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Календарь совещаний</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Календарь отсутствий</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Бронирование переговорных</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <!-- Разделительная линия -->
-      <div class="col-md-1 separator"></div>
-
-      <!-- Основная часть страницы -->
-      <main role="main" class="col-md">
+        <!-- Sidebar -->
+        <nav class="col-md-2 sidebar">
+            <div class="sidebar-sticky">
+                <div class="sidebar-header text-center py-4">
+                    <img src="~/images/DirectumRxLogo.svg" alt="Logo"/>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Календарь совещаний</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Календарь отсутствий</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Бронирование переговорных</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         
-        <div class="container-fluid d-flex align-items-center">
-          <h1 class="flex-grow-1">@ViewBag.Title</h1>
-          <a href="#" style="color: #000000;" class="ml-auto d-flex align-items-center">
-            <i class="far fa-bell position-relative fa-2x">
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.75rem;">
-                3
-                <span class="visually-hidden">New alerts</span>
-              </span>
-            </i>
-          </a>
-          <div class="circle-text align-self-center">
-            <span class="circle-text-inner">ОД</span>
-          </div>
-          <span class="ml-2 align-self-center">Олег Дроздов</span>
-        </div>
+        <div class="col-md-1 separator"></div>
         
-        <div class="container-fluid">
-          @RenderBody()
-        </div>
-      </main>
+        <main role="main" class="col-md">
+
+            <div class="container-fluid d-flex align-items-center">
+                <h1 class="flex-grow-1">@ViewBag.Title</h1>
+                <a href="#" style="color: #000000;" class="ml-auto d-flex align-items-center">
+                    <i class="far fa-bell position-relative fa-2x">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.75rem;">
+                            3
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </i>
+                </a>
+                <div class="circle-text align-self-center">
+                    @if(string.IsNullOrEmpty(ViewBag.Photo)){
+                    <span class="circle-text-inner">@ViewBag.Initials</span>
+                    }
+                    else{
+                        <img class="circle-image" src="data:image/jpeg;base64,@ViewBag.Photo">
+                    }
+                </div>
+                <div class="dropdown ml-2 align-self-center">
+                  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    @ViewData["UserName"]
+                  </a>
+                
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li>
+                        <form method="post" asp-controller="Account" asp-action="Logout">
+                            <input class="dropdown-item" type="submit" value="Выход" />
+                        </form>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </main>
     </div>
-  </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    $(document).ready(function() {
+        $('#logoutLink').on('click', function(e) {
+            e.preventDefault();
+            // Отправка POST-запроса на URL Logout методом fetch или $.ajax
+            fetch('/Account/Logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: ''
+            }).then(function(response) {
+                if (response.ok) {
+                    // Перенаправление пользователя
+                    window.location.href = '/Account/Login';
+                } else {
+                    // Обработка ошибок
+                    console.error('Ошибка выхода пользователя');
+                }
+            }).catch(function(error) {
+                console.error('Произошла ошибка:', error);
+            });
+        });
+    });
+</script>
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>

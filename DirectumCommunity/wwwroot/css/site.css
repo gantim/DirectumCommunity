@@ -55,7 +55,7 @@
   font-weight: bold;
 }
 
-body, .container-fluid, h1, a, span {
+body, .container-fluid, h1, a, span, input {
   font-family: 'Open Sans', sans-serif;
 }
 
@@ -68,4 +68,11 @@ body, .container-fluid, h1, a, span {
 .custom-btn:hover {
   background-color: #FF8600;
   color: white;
+}
+
+.circle-image {
+  width: 100px; /* Задайте необходимую ширину */
+  height: 100px; /* Задайте необходимую высоту */
+  border-radius: 50%; /* Сделать круглым */
+  object-fit: cover; /* Масштабирование изображения для заполнения контейнера */
 }

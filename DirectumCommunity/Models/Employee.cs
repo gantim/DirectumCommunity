@@ -2,6 +2,7 @@
 
 public class Employee
 {
+    private DateTimeOffset? lastModifyDate;
     public int Id { get; set; }
     public string? Sid { get; set; }
     public bool? IsSystem { get; set; }
@@ -20,24 +21,23 @@ public class Employee
     public int? DepartmentId { get; set; }
     public int? JobTitleId { get; set; }
     public int? PersonId { get; set; }
-    private DateTimeOffset? lastModifyDate;
+    public int? LoginId { get; set; }
+
     public DateTimeOffset? LastModifyDate
     {
-        get { return lastModifyDate; }
+        get => lastModifyDate;
         set
         {
             if (value.HasValue)
-            {
                 lastModifyDate = value.Value.UtcDateTime;
-            }
             else
-            {
                 lastModifyDate = null;
-            }
         }
     }
-    
+
     public Department Department { get; set; }
     public JobTitle JobTitle { get; set; }
     public Person Person { get; set; }
+    public Login Login { get; set; }
+    public PersonalPhoto PersonalPhoto { get; set; }
 }

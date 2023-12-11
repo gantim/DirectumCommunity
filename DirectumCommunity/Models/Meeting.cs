@@ -2,6 +2,7 @@
 
 public class Meeting
 {
+    private DateTimeOffset? dateTime;
     public int Id { get; set; }
     public string? Name { get; set; }
     public string? Location { get; set; }
@@ -9,20 +10,16 @@ public class Meeting
     public string? DisplayName { get; set; }
     public double? Duration { get; set; }
     public string? Status { get; set; }
-    private DateTimeOffset? dateTime;
+
     public DateTimeOffset? DateTime
     {
-        get { return dateTime; }
+        get => dateTime;
         set
         {
             if (value.HasValue)
-            {
                 dateTime = value.Value.UtcDateTime;
-            }
             else
-            {
                 dateTime = null;
-            }
         }
     }
 }

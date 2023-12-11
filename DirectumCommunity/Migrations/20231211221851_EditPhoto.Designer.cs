@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231211221851_EditPhoto")]
+    partial class EditPhoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,6 +190,9 @@ namespace DirectumCommunity.Migrations
                     b.Property<string>("PersonalPhotoHash")
                         .HasColumnType("text");
 
+                    b.Property<int?>("PersonalPhotoId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PersonnelNumber")
                         .HasColumnType("text");
 
@@ -208,6 +214,8 @@ namespace DirectumCommunity.Migrations
                     b.HasIndex("LoginId");
 
                     b.HasIndex("PersonId");
+
+                    b.HasIndex("PersonalPhotoId");
 
                     b.ToTable("Employees");
                 });
@@ -392,13 +400,9 @@ namespace DirectumCommunity.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("PersonalPhotoHash")
+                    b.Property<string>("Photo")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<byte[]>("Value")
-                        .IsRequired()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -566,6 +570,10 @@ namespace DirectumCommunity.Migrations
                         .WithMany()
                         .HasForeignKey("PersonId");
 
+                    b.HasOne("DirectumCommunity.Models.PersonalPhoto", "PersonalPhoto")
+                        .WithMany()
+                        .HasForeignKey("PersonalPhotoId");
+
                     b.Navigation("Department");
 
                     b.Navigation("JobTitle");
@@ -573,6 +581,8 @@ namespace DirectumCommunity.Migrations
                     b.Navigation("Login");
 
                     b.Navigation("Person");
+
+                    b.Navigation("PersonalPhoto");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

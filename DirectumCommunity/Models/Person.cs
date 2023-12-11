@@ -2,6 +2,7 @@
 
 public class Person
 {
+    private DateTimeOffset? dateOfBirth;
     public int Id { get; set; }
     public string? Name { get; set; }
     public string? TIN { get; set; }
@@ -23,22 +24,19 @@ public class Person
     public string? LastName { get; set; }
     public string? FirstName { get; set; }
     public string? MiddleName { get; set; }
-    private DateTimeOffset? dateOfBirth;
+
     public DateTimeOffset? DateOfBirth
     {
-        get { return dateOfBirth; }
+        get => dateOfBirth;
         set
         {
             if (value.HasValue)
-            {
                 dateOfBirth = value.Value.UtcDateTime;
-            }
             else
-            {
                 dateOfBirth = null;
-            }
         }
     }
+
     public string? INILA { get; set; }
     public string? ShortName { get; set; }
     public string? Sex { get; set; }
