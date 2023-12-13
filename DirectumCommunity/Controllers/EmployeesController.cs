@@ -22,7 +22,6 @@ public class EmployeesController : Controller
     
     public async Task<IActionResult> Index()
     {
-        //await _directumService.ImportData();
         var list = await _employeeService.GetAll();
         ViewBag.Title = "Наши сотрудники";
         var login = User.Identity?.Name;

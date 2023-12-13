@@ -1,6 +1,8 @@
-using System.Text;
 using DirectumCommunity.Models;
 using DirectumCommunity.Services;
+using Hangfire;
+using Hangfire.Console;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +32,15 @@ builder.Services.AddTransient<IDirectumService>(provider =>
 
 builder.Services.AddTransient<EmployeeService>();
 
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireDb"))
+    .UseConsole());
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -37,6 +48,11 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Directum/Error");
     app.UseHsts();
 }
+
+app.UseHangfireDashboard("/jobs");
+
+RecurringJob.AddOrUpdate<IDirectumService>("ImportDataFromDirectumRX", x => x.ImportData(null), Cron.Hourly,
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

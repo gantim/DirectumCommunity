@@ -40,4 +40,9 @@ public class Employee
     public Person Person { get; set; }
     public Login Login { get; set; }
     public PersonalPhoto PersonalPhoto { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
 }

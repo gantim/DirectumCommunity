@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using DirectumCommunity.Models;
+using Hangfire.Console;
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Simple.OData.Client;
 
@@ -10,6 +12,7 @@ public class DirectumService : IDirectumService
     private readonly string _host;
     private readonly string _login;
     private readonly string _password;
+    protected PerformContext _context;
 
     public DirectumService(string host, string login, string password)
     {
@@ -22,8 +25,12 @@ public class DirectumService : IDirectumService
         _password = password;
     }
 
-    public async Task ImportData()
+    public async Task ImportData(PerformContext context)
     {
+        _context = context;
+        
+        _context.WriteLine("Начало импорта данных сотрудников из DirectumRx...");
+        
         var odataClientSettings = new ODataClientSettings(new Uri(_host));
 
         odataClientSettings.BeforeRequest += message =>
@@ -41,93 +48,109 @@ public class DirectumService : IDirectumService
             .Expand(x => x.PersonalPhoto)
             .FindEntriesAsync();
 
+        var bar = context.WriteProgressBar();
+        
         using (var db = new ApplicationDbContext())
         {
-            foreach (var item in result)
+            foreach (var item in result.ToList().WithProgress(bar))
             {
-                item.DepartmentId = item.Department != null ? item.Department.Id : null;
-                item.PersonId = item.Person != null ? item.Person.Id : null;
-                item.JobTitleId = item.JobTitle != null ? item.JobTitle.Id : null;
-                item.LoginId = item.Login != null ? item.Login.Id : null;
-
-                if (item.Department != null)
+                try
                 {
-                    var existingDepartment = await db.Departments.FindAsync(item.Department.Id);
+                    _context.WriteLine($"Импорт сотрудника: {item}");
 
-                    if (existingDepartment != null)
+                    item.DepartmentId = item.Department != null ? item.Department.Id : null;
+                    item.PersonId = item.Person != null ? item.Person.Id : null;
+                    item.JobTitleId = item.JobTitle != null ? item.JobTitle.Id : null;
+                    item.LoginId = item.Login != null ? item.Login.Id : null;
+
+                    if (item.Department != null)
                     {
-                        if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingDepartment))
-                            db.Entry(existingDepartment).CurrentValues.SetValues(item.Department);
+                        var existingDepartment = await db.Departments.FindAsync(item.Department.Id);
+
+                        if (existingDepartment != null)
+                        {
+                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingDepartment))
+                                db.Entry(existingDepartment).CurrentValues.SetValues(item.Department);
+                        }
+                        else
+                        {
+                            db.Departments.Add(item.Department);
+                        }
+                    }
+
+                    if (item.JobTitle != null)
+                    {
+                        var existingJobTitle = await db.JobTitles.FindAsync(item.JobTitle.Id);
+
+                        if (existingJobTitle != null)
+                        {
+                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingJobTitle))
+                                db.Entry(existingJobTitle).CurrentValues.SetValues(item.JobTitle);
+                        }
+                        else
+                        {
+                            db.JobTitles.Add(item.JobTitle);
+                        }
+                    }
+
+                    if (item.Person != null)
+                    {
+                        var existingPerson = await db.Persons.FindAsync(item.Person.Id);
+
+                        if (existingPerson != null)
+                        {
+                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingPerson))
+                                db.Entry(existingPerson).CurrentValues.SetValues(item.Person);
+                        }
+                        else
+                        {
+                            db.Persons.Add(item.Person);
+                        }
+                    }
+
+                    if (item.Login != null)
+                    {
+                        var existingLogin = await db.Logins.FindAsync(item.Login.Id);
+
+                        if (existingLogin != null)
+                        {
+                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingLogin))
+                                db.Entry(existingLogin).CurrentValues.SetValues(item.Login);
+                        }
+                        else
+                        {
+                            db.Logins.Add(item.Login);
+                        }
+                    }
+
+                    item.Department = null;
+                    item.JobTitle = null;
+                    item.Person = null;
+                    item.Login = null;
+
+                    item.LastModifyDate = DateTime.Now;
+
+                    var existingEmployee = await db.Employees.FindAsync(item.Id);
+
+                    if (existingEmployee != null)
+                    {
+                        if (item.PersonalPhoto != null)
+                        {
+                            item.PersonalPhoto.PersonalPhotoHash = item.PersonalPhotoHash;
+                            db.PersonalPhotos.Add(item.PersonalPhoto);
+                        }
+
+                        db.Entry(existingEmployee).CurrentValues.SetValues(item);
                     }
                     else
                     {
-                        db.Departments.Add(item.Department);
+                        db.Employees.Add(item);
                     }
-                }
 
-                if (item.JobTitle != null)
+                }
+                catch (Exception e)
                 {
-                    var existingJobTitle = await db.JobTitles.FindAsync(item.JobTitle.Id);
-
-                    if (existingJobTitle != null)
-                    {
-                        if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingJobTitle))
-                            db.Entry(existingJobTitle).CurrentValues.SetValues(item.JobTitle);
-                    }
-                    else
-                    {
-                        db.JobTitles.Add(item.JobTitle);
-                    }
-                }
-
-                if (item.Person != null)
-                {
-                    var existingPerson = await db.Persons.FindAsync(item.Person.Id);
-
-                    if (existingPerson != null)
-                    {
-                        if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingPerson))
-                            db.Entry(existingPerson).CurrentValues.SetValues(item.Person);
-                    }
-                    else
-                    {
-                        db.Persons.Add(item.Person);
-                    }
-                }
-                
-                if (item.Login != null)
-                {
-                    var existingLogin = await db.Logins.FindAsync(item.Login.Id);
-
-                    if (existingLogin != null)
-                    {
-                        if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingLogin))
-                            db.Entry(existingLogin).CurrentValues.SetValues(item.Login);
-                    }
-                    else
-                    {
-                        db.Logins.Add(item.Login);
-                    }
-                }
-
-                item.Department = null;
-                item.JobTitle = null;
-                item.Person = null;
-                item.Login = null;
-
-                item.LastModifyDate = DateTime.Now;
-
-                var existingEmployee = await db.Employees.FindAsync(item.Id);
-
-                if (existingEmployee != null){                    
-                    if(item.PersonalPhoto != null){
-                        item.PersonalPhoto.PersonalPhotoHash = item.PersonalPhotoHash;
-                    db.PersonalPhotos.Add(item.PersonalPhoto);
-                    }
-                    db.Entry(existingEmployee).CurrentValues.SetValues(item);
-                }
-                else{
-                    db.Employees.Add(item);
+                    _context.WriteLine($"Ошибка импорта {item}: {e.Message} ");
                 }
             }
 
