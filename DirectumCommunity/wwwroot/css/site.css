@@ -71,8 +71,122 @@ body, .container-fluid, h1, a, span, input {
 }
 
 .circle-image {
-  width: 100px; /* Задайте необходимую ширину */
-  height: 100px; /* Задайте необходимую высоту */
+  width: 50px; /* Задайте необходимую ширину */
+  height: 50px; /* Задайте необходимую высоту */
   border-radius: 50%; /* Сделать круглым */
   object-fit: cover; /* Масштабирование изображения для заполнения контейнера */
+  border: 2px solid #ff8600;
+}
+
+.employee-details {
+  cursor: pointer;
+}
+
+.employee-details img {
+  width: 220px;
+  height: 256px;
+}
+
+.modal-dialog {
+  max-width: 950px; /* Задайте желаемую фиксированную ширину */
+  margin: 1.75rem auto; /* Для центрирования по горизонтали */
+}
+
+.modal-text-header{
+  color: black;
+  font-size: 36px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+}
+
+.modal-param-text {
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+  margin-bottom: 11px;
+}
+
+.modal-value-text {
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: 11px;
+}
+
+.modal-param-text-2 {
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+  margin-bottom: 20px;
+}
+
+.modal-value-text-2 {
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: 20px;
+}
+
+.top-left-cell {
+  vertical-align: top;
+  text-align: left;
+  padding: 5px;
+}
+
+.table-header-text{
+  color: black;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.table-body-text{
+  color: black;
+  font-size: 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word
+}
+
+.modal-work-text {
+  color: black;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: 20px;
+}
+
+.nav-header-text{
+  color: black;
+  font-size: 48px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.employee-card-name-text{
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+}
+
+.employee-work-info-text{
+  color: black;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word;
 }

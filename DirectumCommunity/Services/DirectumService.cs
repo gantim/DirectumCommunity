@@ -52,6 +52,8 @@ public class DirectumService : IDirectumService
         
         using (var db = new ApplicationDbContext())
         {
+            var employeePhotos = await db.PersonalPhotos.ToListAsync();
+            
             foreach (var item in result.ToList().WithProgress(bar))
             {
                 try
@@ -136,6 +138,7 @@ public class DirectumService : IDirectumService
                     {
                         if (item.PersonalPhoto != null)
                         {
+                            db.PersonalPhotos.RemoveRange(employeePhotos.Where(ep => ep.PersonalPhotoHash == item.PersonalPhotoHash));
                             item.PersonalPhoto.PersonalPhotoHash = item.PersonalPhotoHash;
                             db.PersonalPhotos.Add(item.PersonalPhoto);
                         }

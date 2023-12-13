@@ -18,17 +18,23 @@ public class EmployeesController : Controller
         _directumService = directumService;
         _logger = logger;
         _employeeService = employeeService;
+
+        Task.Run(async () => await GetNavbarData());
     }
     
     public async Task<IActionResult> Index()
     {
         var list = await _employeeService.GetAll();
         ViewBag.Title = "Наши сотрудники";
-        var login = User.Identity?.Name;
-        var employee = await _employeeService.GetEmployeeByLogin(login);
-        ViewBag.UserName = $"{employee?.Person.FirstName} {employee?.Person.LastName}";
-        ViewBag.Photo = await _employeeService.GetPhotoByEmployeeId(employee.Id);
-        ViewBag.Initials = $"{employee.Person.FirstName?.FirstOrDefault()}{employee.Person.LastName?.FirstOrDefault()}";
         return View(list);
+    }
+
+    private async Task GetNavbarData()
+    {
+        var login = User.Identity?.Name;
+        var navbarData = await _employeeService.GetNavbarDataByLogin(login);
+        ViewBag.UserName = navbarData.Name;
+        ViewBag.Photo = navbarData.Avatar;
+        ViewBag.Initials = navbarData.Initials;
     }
 }

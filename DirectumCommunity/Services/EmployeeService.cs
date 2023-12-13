@@ -9,11 +9,18 @@ public class EmployeeService
     {
         await using (var db = new ApplicationDbContext())
         {
-            return await db.Employees.Include(e => e.Department)
+            var employees = await db.Employees.Include(e => e.Department)
                 .Include(e => e.JobTitle)
                 .Include(e => e.Person)
                 .Include(l => l.Login)
                 .ToListAsync();
+
+            foreach (var employee in employees)
+            {
+                employee.Avatar = await GetEmployeePhoto(employee);
+            }
+
+            return employees;
         }
     }
     
@@ -29,20 +36,36 @@ public class EmployeeService
         }
     }
 
-    public async Task<string> GetPhotoByEmployeeId(int id){
-        if(id != 0){
-            await using (var db = new ApplicationDbContext())
+    private async Task<string> GetEmployeePhoto(Employee? employee)
+    {
+        if (employee != null)
         {
-            var employee = await db.Employees.FirstOrDefaultAsync(e => e.Id == id);
-            if(employee != null){
-                var photo = await db.PersonalPhotos.FirstOrDefaultAsync(pp => pp.PersonalPhotoHash == employee.PersonalPhotoHash);
-                if(photo != null){
+            await using (var db = new ApplicationDbContext())
+            {
+                var photo = await db.PersonalPhotos.FirstOrDefaultAsync(pp =>
+                    pp.PersonalPhotoHash == employee.PersonalPhotoHash);
+                if (photo != null)
+                {
                     return Convert.ToBase64String(photo.Value);
                 }
             }
         }
-        }
 
         return string.Empty;
+    }
+
+    public async Task<NavbarData> GetNavbarDataByLogin(string login)
+    {
+        var employee = await GetEmployeeByLogin(login);
+        var userName = $"{employee?.Person.FirstName} {employee?.Person.LastName}";
+        var avatar = await GetEmployeePhoto(employee);
+        var initials = $"{employee.Person.FirstName?.FirstOrDefault()}{employee.Person.LastName?.FirstOrDefault()}";
+
+        return new NavbarData()
+        {
+            Name = userName,
+            Avatar = avatar,
+            Initials = initials
+        };
     }
 }

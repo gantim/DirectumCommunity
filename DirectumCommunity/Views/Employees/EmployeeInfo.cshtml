@@ -1,0 +1,24 @@
+﻿@model Employee
+
+<div class="col-sm-4" style="margin-bottom: 60px;">
+    <div class="row employee-details">
+        <div class="row text-center">
+            @if (!string.IsNullOrEmpty(Model.Avatar))
+            {
+                <img src="data:image/jpeg;base64,@Model.Avatar" alt="Employee Avatar">
+            }
+            else
+            {
+                <img src="~/images/DefaultEmployeeAvatar.svg" alt="Default Avatar">
+            }
+        </div>
+        <div class="row employee-card-name-text">
+            @Model.Person?.LastName<br/>@Model.Person?.FirstName<br/>@Model.Person?.MiddleName
+        </div>
+        <div class="row employee-work-info-text">
+            @Model.Department?.Name
+            <br/>
+            @Model.JobTitle?.Name
+        </div>
+    </div>
+</div>

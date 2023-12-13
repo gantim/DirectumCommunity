@@ -36,7 +36,54 @@
         
         <main role="main" class="col-md">
 
-            <div class="container-fluid d-flex align-items-center">
+            <div class="row" style="margin-bottom: 40px;">
+                <div class="col" style="display: flex; margin-left: 60px;">
+                    <span class="nav-header-text">@ViewBag.Title</span>
+                </div>
+                <div class="col" style="display: flex; flex-direction: row-reverse;">
+                    <div class="row" style="align-items: center;">
+                        <div class="col">
+                            <a href="#" style="color: #000000;">
+                                <i class="far fa-bell position-relative fa-2x">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.75rem;">
+                                        3
+                                        <span class="visually-hidden">New alerts</span>
+                                    </span>
+                                </i>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <div class="circle-text">
+                                @if(string.IsNullOrEmpty(ViewBag.Photo))
+                                {
+                                    <span class="circle-text-inner">@ViewBag.Initials</span>
+                                }
+                                else
+                                {
+                                    <img class="circle-image" src="data:image/jpeg;base64,@ViewBag.Photo">
+                                }
+                            </div>                       
+                        </div>
+                        <div class="col">
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @ViewData["UserName"]
+                                </a>
+                                             
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <li>
+                                        <form method="post" asp-controller="Account" asp-action="Logout">
+                                            <input class="dropdown-item" type="submit" value="Выход" />
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>                       
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            @*<div class="container-fluid d-flex align-items-center">
                 <h1 class="flex-grow-1">@ViewBag.Title</h1>
                 <a href="#" style="color: #000000;" class="ml-auto d-flex align-items-center">
                     <i class="far fa-bell position-relative fa-2x">
@@ -47,10 +94,12 @@
                     </i>
                 </a>
                 <div class="circle-text align-self-center">
-                    @if(string.IsNullOrEmpty(ViewBag.Photo)){
-                    <span class="circle-text-inner">@ViewBag.Initials</span>
+                    @if(string.IsNullOrEmpty(ViewBag.Photo))
+                    {
+                        <span class="circle-text-inner">@ViewBag.Initials</span>
                     }
-                    else{
+                    else
+                    {
                         <img class="circle-image" src="data:image/jpeg;base64,@ViewBag.Photo">
                     }
                 </div>
@@ -67,7 +116,7 @@
                     </li>
                   </ul>
                 </div>
-            </div>
+            </div>*@
 
             <div class="container-fluid">
                 @RenderBody()
@@ -78,32 +127,6 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script>
-    $(document).ready(function() {
-        $('#logoutLink').on('click', function(e) {
-            e.preventDefault();
-            // Отправка POST-запроса на URL Logout методом fetch или $.ajax
-            fetch('/Account/Logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                },
-                body: ''
-            }).then(function(response) {
-                if (response.ok) {
-                    // Перенаправление пользователя
-                    window.location.href = '/Account/Login';
-                } else {
-                    // Обработка ошибок
-                    console.error('Ошибка выхода пользователя');
-                }
-            }).catch(function(error) {
-                console.error('Произошла ошибка:', error);
-            });
-        });
-    });
-</script>
 @await RenderSectionAsync("Scripts", false)
 </body>
 </html>

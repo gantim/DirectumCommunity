@@ -1,4 +1,6 @@
-﻿namespace DirectumCommunity.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DirectumCommunity.Models;
 
 public class Employee
 {
@@ -40,6 +42,9 @@ public class Employee
     public Person Person { get; set; }
     public Login Login { get; set; }
     public PersonalPhoto PersonalPhoto { get; set; }
+    
+    [NotMapped]
+    public string Avatar { get; set; }
 
     public override string ToString()
     {
