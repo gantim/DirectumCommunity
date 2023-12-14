@@ -1,4 +1,5 @@
-﻿using DirectumCommunity.Services;
+﻿using DirectumCommunity.Models;
+using DirectumCommunity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,14 @@ public class EmployeesController : Controller
         return View(list);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetEmployeeInfo(int id)
+    {
+        var employee = await _employeeService.GetById(id);
+
+        return PartialView("EmployeeInfoModal", employee);
+    }
+    
     private async Task GetNavbarData()
     {
         var login = User.Identity?.Name;

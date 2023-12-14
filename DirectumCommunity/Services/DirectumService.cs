@@ -39,7 +39,7 @@ public class DirectumService : IDirectumService
             message.Headers.Add("Authorization", "Basic " + authenticationHeaderValue);
         };
         var odataClient = new ODataClient(odataClientSettings);
-
+        
         var result = await odataClient.For<Employee>("IEmployees")
             .Expand(x => x.Department)
             .Expand(x => x.JobTitle)
@@ -101,7 +101,7 @@ public class DirectumService : IDirectumService
 
                         if (existingPerson != null)
                         {
-                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingPerson))
+                            if (db.ChangeTracker.Entries().All(e => e.Entity != existingPerson))
                                 db.Entry(existingPerson).CurrentValues.SetValues(item.Person);
                         }
                         else
@@ -161,6 +161,14 @@ public class DirectumService : IDirectumService
         }
     }
 
+    /*private async Task<List<Person>> GetPersons(ODataClient oDataClient)
+    {
+        var result = await oDataClient.For<Person>()
+            .Expand(x => x.City)
+            .FindEntriesAsync();
+        return result.ToList();
+    }*/
+    
     public async Task<bool> Login(string login, string password)
     {
         var requestUrl = $"{_host}$metadata/";

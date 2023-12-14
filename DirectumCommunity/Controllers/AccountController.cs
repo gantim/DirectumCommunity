@@ -43,7 +43,7 @@ public class AccountController : Controller
                 {
                     if (!db.Users.Any(u => u.UserName == model.Login))
                     {
-                        var employee = await _employeeService.GetEmployeeByLogin(model.Login);
+                        var employee = await _employeeService.GetByLogin(model.Login);
 
                         var user = new DirectumUser { UserName = model.Login, EmployeeId = employee.Id };
                         var result = await _userManager.CreateAsync(user, model.Password);

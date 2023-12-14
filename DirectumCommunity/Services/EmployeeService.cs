@@ -24,7 +24,26 @@ public class EmployeeService
         }
     }
     
-    public async Task<Employee?> GetEmployeeByLogin(string login)
+    public async Task<Employee?> GetById(int id)
+    {
+        await using (var db = new ApplicationDbContext())
+        {
+            var employee = await db.Employees.Include(e => e.Department)
+                .Include(e => e.JobTitle)
+                .Include(e => e.Person)
+                .Include(l => l.Login)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            
+            if (employee != null)
+            {
+                employee.Avatar = await GetEmployeePhoto(employee);
+            }
+
+            return employee;
+        }
+    }
+    
+    public async Task<Employee?> GetByLogin(string login)
     {
         await using (var db = new ApplicationDbContext())
         {
@@ -56,7 +75,7 @@ public class EmployeeService
 
     public async Task<NavbarData> GetNavbarDataByLogin(string login)
     {
-        var employee = await GetEmployeeByLogin(login);
+        var employee = await GetByLogin(login);
         var userName = $"{employee?.Person.FirstName} {employee?.Person.LastName}";
         var avatar = await GetEmployeePhoto(employee);
         var initials = $"{employee.Person.FirstName?.FirstOrDefault()}{employee.Person.LastName?.FirstOrDefault()}";

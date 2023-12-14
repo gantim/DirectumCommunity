@@ -40,4 +40,17 @@ public class Person
     public string? INILA { get; set; }
     public string? ShortName { get; set; }
     public string? Sex { get; set; }
+    
+    /*public int? CityId { get; set; }
+    public City City { get; set; }
+
+    public string GetCity()
+    {
+        if (City != null)
+        {
+            return City.Name;
+        }
+
+        return string.Empty;
+    }*/
 }
