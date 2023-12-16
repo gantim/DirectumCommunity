@@ -82,7 +82,7 @@ body, .container-fluid, h1, a, span, input {
   cursor: pointer;
 }
 
-.employee-details img {
+.employee-details-img {
   width: 220px;
   height: 256px;
 }
@@ -99,9 +99,25 @@ body, .container-fluid, h1, a, span, input {
 
 .modal-text-header{
   color: black;
+  font-size: 32px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+}
+
+.birthday-text-header{
+  color: black;
   font-size: 36px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
+  word-wrap: break-word;
+}
+
+.birthday-text-body{
+  color: black;
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
   word-wrap: break-word;
 }
 
@@ -194,4 +210,30 @@ body, .container-fluid, h1, a, span, input {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
   word-wrap: break-word;
+}
+
+.img-overlay {
+  position: absolute;
+  bottom: -25px;
+  left: 150px;
+  width: 100px;
+  height: 100px;
+}
+
+.modal-body-birthday{
+  position: relative;
+  flex: 1 1 auto;
+}
+
+.birthday-modal-btn {
+  margin-left: 404px;
+  margin-right: 289px;
+  background-color: #659BE0D9;
+  transition: background-color 0.3s ease;
+}
+
+.birthday-modal-btn:hover,
+.birthday-modal-btn:active,
+.birthday-modal-btn:focus {
+  background-color: #659BE0; /* Измененный цвет при наведении или нажатии */
 }

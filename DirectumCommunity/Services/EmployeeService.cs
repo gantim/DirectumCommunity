@@ -82,6 +82,8 @@ public class EmployeeService
 
         return new NavbarData()
         {
+            EmployeeId = employee.Id,
+            PersonId = employee.Person.Id,
             Name = userName,
             Avatar = avatar,
             Initials = initials

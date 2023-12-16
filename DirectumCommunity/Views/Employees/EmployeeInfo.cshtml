@@ -1,15 +1,20 @@
-﻿@model Employee
+﻿@using DirectumCommunity.Extensions
+@model Employee
 
 <div class="col-sm-4 employee-info" data-employee-id="@Model.Id" style="margin-bottom: 60px;">
     <div class="row employee-details">
-        <div class="row text-center">
+        <div class="row position-relative">
             @if (!string.IsNullOrEmpty(Model.Avatar))
             {
-                <img src="data:image/jpeg;base64,@Model.Avatar" alt="Employee Avatar">
+                <img class="employee-details-img" src="data:image/jpeg;base64,@Model.Avatar" alt="Employee Avatar">
             }
             else
             {
-                <img src="~/images/DefaultEmployeeAvatar.svg" alt="Default Avatar">
+                <img class="employee-details-img" src="~/images/DefaultEmployeeAvatar.svg" alt="Default Avatar">
+            }
+            @if (Model.Person.IsBirthdayToday())
+            {
+                <img class="img-overlay" src="~/images/Birthday.svg" alt="Default Avatar">
             }
         </div>
         <div class="row employee-card-name-text">

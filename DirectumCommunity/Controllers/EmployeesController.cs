@@ -38,6 +38,14 @@ public class EmployeesController : Controller
         return PartialView("EmployeeInfoModal", employee);
     }
     
+    [HttpGet]
+    public async Task<IActionResult> GetBirthdayNotification(int id)
+    {
+        var employee = await _employeeService.GetById(id);
+
+        return PartialView("BirthdayNotification", $"{employee?.Person.FirstName} {employee?.Person.MiddleName}");
+    }
+    
     private async Task GetNavbarData()
     {
         var login = User.Identity?.Name;
@@ -45,5 +53,7 @@ public class EmployeesController : Controller
         ViewBag.UserName = navbarData.Name;
         ViewBag.Photo = navbarData.Avatar;
         ViewBag.Initials = navbarData.Initials;
+        ViewBag.EmployeeId = navbarData.EmployeeId;
+        ViewBag.PersonId = navbarData.PersonId;
     }
 }

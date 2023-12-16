@@ -1,3 +1,4 @@
+using DirectumCommunity.Hubs;
 using DirectumCommunity.Models;
 using DirectumCommunity.Services;
 using Hangfire;
@@ -41,6 +42,8 @@ builder.Services.AddHangfire(configuration => configuration
 
 builder.Services.AddHangfireServer();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -50,6 +53,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHangfireDashboard("/jobs");
+
+app.MapHub<BirthdayHub>("/birthday");
 
 RecurringJob.AddOrUpdate<IDirectumService>("ImportDataFromDirectumRX", x => x.ImportData(null), Cron.Hourly,
     new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });

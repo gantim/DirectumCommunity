@@ -30,7 +30,10 @@
         <_ContentIncludedByDefault Remove="Views\Directum\Privacy.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Directum\Workers.cshtml"/>
 
+
+
     </ItemGroup>
+
 
 
 

@@ -40,6 +40,7 @@ public class Person
     public string? INILA { get; set; }
     public string? ShortName { get; set; }
     public string? Sex { get; set; }
+    public DateTimeOffset? LastBirthdayNotification { get; set; }
     
     /*public int? CityId { get; set; }
     public City City { get; set; }
