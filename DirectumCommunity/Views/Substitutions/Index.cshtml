@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="btn-group btn-toggle-group filter-year-month">
+                <button class="btn btn-sm active" id="monthButtonSub">Месяц</button>
+                <button class="btn btn-sm" id="yearButtonSub">Год</button>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div id="calendar" class="calendar">
+                <!-- Сюда будут добавлены числа и дни недели -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Получаем элемент календаря
+    const calendar = document.getElementById('calendar');
+
+    // Создаем массив с названиями дней недели
+    const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+    // Функция для добавления чисел и дней недели
+    function createCalendar() {
+      const daysInMonth = 31; // Количество дней в месяце, замените на актуальное значение
+
+      for (let i = 1; i <= daysInMonth; i++) {
+          
+        const date = new Date(2023, 11, i); // Укажите год и месяц
+        const dayOfWeek = daysOfWeek[date.getDay()];
+        const day = document.createElement('div');
+        day.classList.add('calendar-day');
+        day.textContent = i + ' ' + dayOfWeek;
+        calendar.appendChild(day);
+      }
+    }
+    createCalendar();
+  </script>

@@ -37,17 +37,44 @@ public class Employee
         }
     }
 
-    public Department Department { get; set; }
-    public JobTitle JobTitle { get; set; }
-    public Person Person { get; set; }
-    public Login Login { get; set; }
-    public PersonalPhoto PersonalPhoto { get; set; }
+    public Department? Department { get; set; }
+    public JobTitle? JobTitle { get; set; }
+    public Person? Person { get; set; }
+    public Login? Login { get; set; }
+    public PersonalPhoto? PersonalPhoto { get; set; }
     
     [NotMapped]
     public string Avatar { get; set; }
 
+    [NotMapped]
+    public Organization? Organization { get; set; }
+    public DateTimeOffset? CreateDate { get; set; }
+    
     public override string ToString()
     {
         return $"{Name}";
+    }
+
+    public void Update(Employee employee)
+    {
+        Sid = employee.Sid;
+        IsSystem = employee.IsSystem;
+        Name = employee.Name;
+        Description = employee.Description;
+        Status = employee.Status;
+        PersonalPhotoHash = employee.PersonalPhotoHash;
+        Phone = employee.Phone;
+        Note = employee.Note;
+        Email = employee.Email;
+        NeedNotifyExpiredAssignments = employee.NeedNotifyExpiredAssignments;
+        NeedNotifyNewAssignments = employee.NeedNotifyNewAssignments;
+        NeedNotifyAssignmentsSummary = employee.NeedNotifyAssignmentsSummary;
+        PersonnelNumber = employee.PersonnelNumber;
+        ExternalId = employee.ExternalId;
+        DepartmentId = employee.DepartmentId;
+        JobTitleId = employee.JobTitleId;
+        PersonId = employee.PersonId;
+        LoginId = employee.LoginId;
+        LastModifyDate = employee.LastModifyDate;
     }
 }

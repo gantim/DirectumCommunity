@@ -13,4 +13,18 @@ public class Department
     public string? Note { get; set; }
     public string? Code { get; set; }
     public string? ExternalId { get; set; }
+
+    public void Update(Department department)
+    {
+        Sid = department.Sid;
+        IsSystem = department.IsSystem;
+        Name = department.Name;
+        Description = department.Description;
+        Status = department.Status;
+        Phone = department.Phone;
+        ShortName = department.ShortName;
+        Note = department.Note;
+        Code = department.Code;
+        ExternalId = department.ExternalId;
+    }
 }

@@ -31,4 +31,14 @@ public class Login
                 lockoutEndDate = null;
         }
     }
+    
+    public void Update(Login login)
+    {
+        NeedChangePassword = login.NeedChangePassword;
+        LoginName = login.LoginName;
+        TypeAuthentication = login.TypeAuthentication;
+        Status = login.Status;
+        PasswordLastChangeDate = login.PasswordLastChangeDate;
+        LockoutEndDate = login.LockoutEndDate;
+    }
 }

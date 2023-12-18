@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231217192904_AddChangeHistory")]
+    partial class AddChangeHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,9 +165,6 @@ namespace DirectumCommunity.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset?>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("integer");
@@ -511,15 +511,10 @@ namespace DirectumCommunity.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PersonId");
 
                     b.ToTable("PersonChanges");
                 });
@@ -543,50 +538,6 @@ namespace DirectumCommunity.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PersonalPhotos");
-                });
-
-            modelBuilder.Entity("DirectumCommunity.Models.Substitution", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<bool?>("DelegateStrictRights")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool?>("IsSystem")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("SubstituteId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubstituteId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Substitutions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -766,32 +717,6 @@ namespace DirectumCommunity.Migrations
                         .HasForeignKey("CityId");
 
                     b.Navigation("City");
-                });
-
-            modelBuilder.Entity("DirectumCommunity.Models.PersonChange", b =>
-                {
-                    b.HasOne("DirectumCommunity.Models.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("DirectumCommunity.Models.Substitution", b =>
-                {
-                    b.HasOne("DirectumCommunity.Models.Employee", "Substitute")
-                        .WithMany()
-                        .HasForeignKey("SubstituteId");
-
-                    b.HasOne("DirectumCommunity.Models.Employee", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Substitute");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

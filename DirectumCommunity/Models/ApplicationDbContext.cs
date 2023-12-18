@@ -12,7 +12,10 @@ public sealed class ApplicationDbContext : IdentityDbContext<DirectumUser>
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Login> Logins => Set<Login>();
     public DbSet<PersonalPhoto> PersonalPhotos => Set<PersonalPhoto>();
-    //public DbSet<City> Cities => Set<City>();
+    public DbSet<City> Cities => Set<City>();
+    public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<PersonChange> PersonChanges => Set<PersonChange>();
+    public DbSet<Substitution> Substitutions => Set<Substitution>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -1,4 +1,5 @@
-﻿@model Employee
+﻿@using DirectumCommunity.Extensions
+@model DirectumCommunity.Models.ViewModels.EmployeeInfoViewModel
 
 <div class="modal" id="employeeModal">
 <div class="modal-dialog">
@@ -10,19 +11,19 @@
 <div class="container">
 <div class="row" style="margin-bottom: 50px;">
     <div class="col">
-        <span class="modal-text-header">@Model.Name</span>
+        <span class="modal-text-header">@Model.Employee.Name</span>
     </div>
 </div>
 
 <div class="row">
     <div class="col employee-modal-img">
-        @if(string.IsNullOrEmpty(Model.Avatar))
+        @if(string.IsNullOrEmpty(Model.Employee.Avatar))
         {
             <img src="~/images/DefaultEmployeeAvatar.svg" alt="Default Avatar">
         }
         else
         {
-            <img src="data:image/jpeg;base64,@Model.Avatar" alt="Employee Avatar">
+            <img src="data:image/jpeg;base64,@Model.Employee.Avatar" alt="Employee Avatar">
         }
     </div>
     <div class="col">
@@ -51,27 +52,9 @@
     <div class="col">
         <div class="row">
             <span class="modal-value-text">
-                @if (Model.Person.DateOfBirth.HasValue)
+                @if (Model.Employee.Person.DateOfBirth.HasValue)
                 {
-                    <text>@Model.Person.DateOfBirth.Value.ToString("dd.MM.yyyy")</text>
-                }
-                else
-                {
-                    <text>-</text>
-                }
-            </span>
-        </div>
-        <div class="row">
-            <span class="modal-value-text">DirectumRX</span>
-        </div>
-        <div class="row">
-            <span class="modal-value-text">Екатеринбург</span>
-        </div>
-        <div class="row">
-            <span class="modal-value-text">
-                @if (!string.IsNullOrEmpty(Model.Person.Phones))
-                {
-                    <text>@Model.Person.Phones</text>
+                    <text>@Model.Employee.Person.DateOfBirth.Value.ToString("dd.MM.yyyy")</text>
                 }
                 else
                 {
@@ -81,9 +64,45 @@
         </div>
         <div class="row">
             <span class="modal-value-text">
-                @if (!string.IsNullOrEmpty(Model.Phone))
+                @if (Model.Employee.Organization != null)
                 {
-                    <text>@Model.Phone</text>
+                    <text>@Model.Employee.Organization.Name</text>
+                }
+                else
+                {
+                    <text>-</text>
+                }
+            </span>
+        </div>
+        <div class="row">
+            <span class="modal-value-text">
+                @if (!string.IsNullOrEmpty(Model.Employee.Person.GetCity()))
+                {
+                    <text>@Model.Employee.Person.GetCity()</text>
+                }
+                else
+                {
+                    <text>-</text>
+                }
+            </span>
+        </div>
+        <div class="row">
+            <span class="modal-value-text">
+                @if (!string.IsNullOrEmpty(Model.Employee.Person.Phones))
+                {
+                    <text>@Model.Employee.Person.Phones</text>
+                }
+                else
+                {
+                    <text>-</text>
+                }
+            </span>
+        </div>
+        <div class="row">
+            <span class="modal-value-text">
+                @if (!string.IsNullOrEmpty(Model.Employee.Phone))
+                {
+                    <text>@Model.Employee.Phone</text>
                 }
                 else
                 {
@@ -96,9 +115,9 @@
         </div>
         <div class="row">
             <span class="modal-value-text">
-                @if (!string.IsNullOrEmpty(Model.Email))
+                @if (!string.IsNullOrEmpty(Model.Employee.Email))
                 {
-                    <text>@Model.Email</text>
+                    <text>@Model.Employee.Email</text>
                 }
                 else
                 {
@@ -121,9 +140,9 @@
     <div class="col-sm-8">
         <div class="row">
             <span class="modal-value-text-2">
-                @if (Model.JobTitle != null && !string.IsNullOrEmpty(Model.JobTitle.Name))
+                @if (Model.Employee.JobTitle != null && !string.IsNullOrEmpty(Model.Employee.JobTitle.Name))
                 {
-                    <text>@Model.JobTitle.Name</text>
+                    <text>@Model.Employee.JobTitle.Name</text>
                 }
                 else
                 {
@@ -133,9 +152,9 @@
         </div>
         <div class="row">
             <span class="modal-value-text-2">
-                @if (Model.Department != null && !string.IsNullOrEmpty(Model.Department.Name))
+                @if (Model.Employee.Department != null && !string.IsNullOrEmpty(Model.Employee.Department.Name))
                 {
-                    <text>@Model.Department.Name</text>
+                    <text>@Model.Employee.Department.Name</text>
                 }
                 else
                 {
@@ -163,10 +182,19 @@
     </div>
     <div class="col-sm-8">
         <div class="row">
-            <span class="modal-value-text-2">01.06.2023 - 31.12.2023</span>
+            <span class="modal-value-text-2">@Model.Period</span>
         </div>
         <div class="row">
-            <span class="modal-value-text-2">DirectumRX</span>
+            <span class="modal-value-text-2">
+                @if (Model.Employee.Organization != null)
+                {
+                    <text>@Model.Employee.Organization.Name</text>
+                }
+                else
+                {
+                    <text>-</text>
+                }
+            </span>
         </div>
     </div>
 </div>
@@ -194,27 +222,29 @@
             </tr>
             </thead>
             <tbody class="table-body-text">
-            <tr>
-                <td>01.08.2023</td>
-                <td>Отдел продаж</td>
-                <td>Отдел маркетинга</td>
-                <td>Аналитик</td>
-                <td>Менеджер по продажам</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            @if (Model.TableModel.Any())
+            {
+                @foreach (var row in Model.TableModel)
+                {
+                    <tr>
+                        <td>@row.Date</td>
+                        <td>@row.OldDepartment</td>
+                        <td>@row.NewDepartment</td>
+                        <td>@row.OldJobTitle</td>
+                        <td>@row.NewJobTitle</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
             </tbody>
         </table>
     </div>
@@ -237,10 +267,10 @@
     </div>
     <div class="col-sm-8">
         <div class="row">
-            <span class="modal-work-text">01.08.2023</span>
+            <span class="modal-work-text">@(Model.Employee.CreateDate?.Date.ToShortDateString() ?? "-")</span>
         </div>
         <div class="row">
-            <span class="modal-work-text">—</span>
+            <span class="modal-work-text">@Model.DismissalDate</span>
         </div>
     </div>
 </div>
@@ -251,7 +281,7 @@
     </div>
 </div>
 
-@if (false)
+@if (Model.LastNameModel != null)
 {
     <div class="row" style="margin-top: 20px;">
         <div class="col-sm-3">
@@ -264,10 +294,10 @@
         </div>
         <div class="col-sm-8">
             <div class="row">
-                <span class="modal-work-text">Смирнова Полина Артемовна</span>
+                <span class="modal-work-text">@Model.LastNameModel.OldValue</span>
             </div>
             <div class="row">
-                <span class="modal-work-text">Потапова Полина Артемовна (изменено 08.12.2023)</span>
+                <span class="modal-work-text">@Model.LastNameModel.NewValue</span>
             </div>
         </div>
     </div>

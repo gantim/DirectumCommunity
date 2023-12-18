@@ -42,16 +42,35 @@ public class Person
     public string? Sex { get; set; }
     public DateTimeOffset? LastBirthdayNotification { get; set; }
     
-    /*public int? CityId { get; set; }
-    public City City { get; set; }
+    public int? CityId { get; set; }
+    public City? City { get; set; }
 
-    public string GetCity()
+    public void Update(Person person)
     {
-        if (City != null)
-        {
-            return City.Name;
-        }
-
-        return string.Empty;
-    }*/
+        Name = person.Name;
+        TIN = person.TIN;
+        LegalAddress = person.LegalAddress;
+        PostalAddress = person.PostalAddress;
+        Phones = person.Phones;
+        Email = person.Email;
+        Homepage = person.Homepage;
+        Note = person.Note;
+        Nonresident = person.Nonresident;
+        PSRN = person.PSRN;
+        NCEO = person.NCEO;
+        NCEA = person.NCEA;
+        Account = person.Account;
+        CanExchange = person.CanExchange;
+        Code = person.Code;
+        ExternalId = person.ExternalId;
+        Status = person.Status;
+        LastName = person.LastName;
+        FirstName = person.FirstName;
+        MiddleName = person.MiddleName;
+        DateOfBirth = person.DateOfBirth;
+        INILA = person.INILA;
+        ShortName = person.ShortName;
+        Sex = person.Sex;
+        CityId = person.CityId;
+    }
 }

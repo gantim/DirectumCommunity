@@ -45,4 +45,14 @@
             }
         });
     });
+
+    $('#monthButtonSub').click(function() {
+        $('#monthButtonSub').addClass('active');
+        $('#yearButtonSub').removeClass('active');
+    });
+
+    $('#yearButtonSub').click(function() {
+        $('#yearButtonSub').addClass('active');
+        $('#monthButtonSub').removeClass('active');
+    });
 });

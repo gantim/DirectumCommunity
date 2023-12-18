@@ -32,4 +32,14 @@ public static class PersonExtension
 
         return false;
     }
+    
+    public static string GetCity(this Person person)
+    {
+        if (person.City != null)
+        {
+            return person.City.Name;
+        }
+
+        return string.Empty;
+    }
 }

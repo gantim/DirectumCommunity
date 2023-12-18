@@ -32,6 +32,7 @@ builder.Services.AddTransient<IDirectumService>(provider =>
 });
 
 builder.Services.AddTransient<EmployeeService>();
+builder.Services.AddTransient<SubstitutionService>();
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
@@ -56,7 +57,10 @@ app.UseHangfireDashboard("/jobs");
 
 app.MapHub<BirthdayHub>("/birthday");
 
-RecurringJob.AddOrUpdate<IDirectumService>("ImportDataFromDirectumRX", x => x.ImportData(null), Cron.Hourly,
+RecurringJob.AddOrUpdate<IDirectumService>("ImportEmployees", x => x.ImportEmployees(null), Cron.Hourly,
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
+
+RecurringJob.AddOrUpdate<IDirectumService>("ImportSubstitutions", x => x.ImportSubstitutions(null), Cron.Hourly,
     new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
 app.UseHttpsRedirection();

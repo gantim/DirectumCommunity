@@ -1,4 +1,5 @@
 using DirectumCommunity.Models;
+using DirectumCommunity.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectumCommunity.Services;
@@ -23,6 +24,33 @@ public class EmployeeService
             return employees;
         }
     }
+
+    public async Task<EmployeeInfoViewModel?> GetByIdWithChanges(int id)
+    {
+        await using (var db = new ApplicationDbContext())
+        {
+            var employeeInfoViewModel = new EmployeeInfoViewModel();
+            
+            var employee = await db.Employees.Include(e => e.Department)
+                .Include(e => e.JobTitle)
+                .Include(l => l.Login)
+                .Include(e => e.Person)
+                .ThenInclude(c => c!.City)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            
+            if (employee != null)
+            {
+                employee.Avatar = await GetEmployeePhoto(employee);
+                employee.Organization = await db.Organizations.FirstOrDefaultAsync();
+                
+                employeeInfoViewModel.Employee = employee;
+                employeeInfoViewModel.History = db.PersonChanges.Where(pc => pc.PersonId == employee.PersonId).ToList();
+                employeeInfoViewModel.FillChanges();
+            }
+            
+            return employeeInfoViewModel;
+        }
+    }
     
     public async Task<Employee?> GetById(int id)
     {
@@ -30,13 +58,15 @@ public class EmployeeService
         {
             var employee = await db.Employees.Include(e => e.Department)
                 .Include(e => e.JobTitle)
-                .Include(e => e.Person)
                 .Include(l => l.Login)
+                .Include(e => e.Person)
+                .ThenInclude(c => c!.City)
                 .FirstOrDefaultAsync(e => e.Id == id);
             
             if (employee != null)
             {
                 employee.Avatar = await GetEmployeePhoto(employee);
+                employee.Organization = await db.Organizations.FirstOrDefaultAsync();
             }
 
             return employee;

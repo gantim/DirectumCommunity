@@ -235,5 +235,48 @@ body, .container-fluid, h1, a, span, input {
 .birthday-modal-btn:hover,
 .birthday-modal-btn:active,
 .birthday-modal-btn:focus {
-  background-color: #659BE0; /* Измененный цвет при наведении или нажатии */
+  background-color: #659BE0;
+}
+
+.filter-year-month .btn {
+  transition: all 0.3s ease;
+  height: 40px; 
+  width: 60px; 
+  font-size: 14px; 
+  padding: 0;
+  background-color: #FF9520;
+  border-color: #FF9520;
+  color: #000000;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  word-wrap: break-word
+}
+.btn-toggle-group .btn.active {
+  background-color: #ffffff;
+  border-color: #FF9520;
+  color: #000000;
+}
+
+.calendar-day {
+  text-align: center;
+  color: black;
+  font-size: 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  padding: 5px;
+  border: 1px solid #FC8404;
+  width: 24px;
+  height: 40px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+.calendar-day:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.calendar-day:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }

@@ -1,8 +1,12 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using DirectumCommunity.Models;
+using DirectumCommunity.Models.Responses;
+using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Simple.OData.Client;
 
 namespace DirectumCommunity.Services;
@@ -25,161 +29,406 @@ public class DirectumService : IDirectumService
         _password = password;
     }
 
-    public async Task ImportData(PerformContext context)
+    [JobDisplayName("Импорт данных о сотрудниках")]
+    public async Task ImportEmployees(PerformContext context)
     {
         _context = context;
+
+        await ImportOrganization();
         
         _context.WriteLine("Начало импорта данных сотрудников из DirectumRx...");
-        
-        var odataClientSettings = new ODataClientSettings(new Uri(_host));
 
-        odataClientSettings.BeforeRequest += message =>
+        try
         {
-            var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_login}:{_password}"));
-            message.Headers.Add("Authorization", "Basic " + authenticationHeaderValue);
-        };
-        var odataClient = new ODataClient(odataClientSettings);
-        
-        var result = await odataClient.For<Employee>("IEmployees")
-            .Expand(x => x.Department)
-            .Expand(x => x.JobTitle)
-            .Expand(x => x.Person)
-            .Expand(x => x.Login)
-            .Expand(x => x.PersonalPhoto)
-            .FindEntriesAsync();
-
-        var bar = context.WriteProgressBar();
-        
-        using (var db = new ApplicationDbContext())
-        {
-            var employeePhotos = await db.PersonalPhotos.ToListAsync();
-            
-            foreach (var item in result.ToList().WithProgress(bar))
+            using (var client = new HttpClient())
             {
-                try
+                var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_login}:{_password}"));
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", authenticationHeaderValue);
+
+                HttpResponseMessage response = await client.GetAsync(
+                    $"{_host}IEmployees?$expand=Department, JobTitle, Login, PersonalPhoto, Person($expand=City)");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    _context.WriteLine($"Импорт сотрудника: {item}");
+                    string json = await response.Content.ReadAsStringAsync();
 
-                    item.DepartmentId = item.Department != null ? item.Department.Id : null;
-                    item.PersonId = item.Person != null ? item.Person.Id : null;
-                    item.JobTitleId = item.JobTitle != null ? item.JobTitle.Id : null;
-                    item.LoginId = item.Login != null ? item.Login.Id : null;
+                    var result = JsonConvert.DeserializeObject<EmployeeResponse>(json);
 
-                    if (item.Department != null)
+                    if (result?.Value != null)
                     {
-                        var existingDepartment = await db.Departments.FindAsync(item.Department.Id);
-
-                        if (existingDepartment != null)
+                        await using (var db = new ApplicationDbContext())
                         {
-                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingDepartment))
-                                db.Entry(existingDepartment).CurrentValues.SetValues(item.Department);
+                            var progressBar = context.WriteProgressBar();
+
+                            var employeePhotos = await db.PersonalPhotos.ToListAsync();
+                            foreach (var employee in result.Value.WithProgress(progressBar))
+                            {
+                                try
+                                {
+                                    _context.WriteLine($"Импорт сотрудника: {employee}");
+
+                                    employee.DepartmentId = employee.Department?.Id;
+                                    employee.PersonId = employee.Person?.Id;
+                                    employee.JobTitleId = employee.JobTitle?.Id;
+                                    employee.LoginId = employee.Login?.Id;
+
+                                    if (employee.Person != null)
+                                    {
+                                        employee.Person.CityId = employee.Person?.City?.Id;
+                                    }
+
+                                    if (employee.Department != null)
+                                    {
+                                        var existingDepartment = await db.Departments.FindAsync(employee.Department.Id);
+
+                                        if (employee.Department.Id != existingDepartment?.Id)
+                                        {
+                                            await SetChanges(employee.Department, existingDepartment,
+                                                employee.PersonId.Value, db);
+                                        }
+                                        
+                                        if (existingDepartment != null)
+                                        {
+                                            existingDepartment.Update(employee.Department);
+                                        }
+                                        else
+                                        {
+                                            db.Departments.Add(employee.Department);
+                                        }
+                                    }
+
+                                    if (employee.JobTitle != null)
+                                    {
+                                        var existingJobTitle = await db.JobTitles.FindAsync(employee.JobTitle.Id);
+
+                                        if (employee.JobTitle.Id != existingJobTitle?.Id)
+                                        {
+                                            await SetChanges(employee.JobTitle, existingJobTitle,
+                                                employee.PersonId.Value, db);
+                                        }
+                                        
+                                        if (existingJobTitle != null)
+                                        {
+                                            existingJobTitle.Update(employee.JobTitle);
+                                        }
+                                        else
+                                        {
+                                            db.JobTitles.Add(employee.JobTitle);
+                                        }
+                                    }
+
+                                    if (employee.Person.City != null)
+                                    {
+                                        var existingCity = await db.Cities.FindAsync(employee.Person.City.Id);
+
+                                        if (existingCity != null)
+                                        {
+                                            existingCity.Update(employee.Person.City);
+                                        }
+                                        else
+                                        {
+                                            db.Cities.Add(employee.Person.City);
+                                        }
+                                    }
+
+                                    if (employee.Person != null)
+                                    {
+                                        var existingPerson = await db.Persons.FindAsync(employee.Person.Id);
+
+                                        if (employee.Person.LastName != existingPerson?.LastName)
+                                        {
+                                            await SetChanges(employee.Person, existingPerson,
+                                                employee.PersonId.Value, db);
+                                        }
+                                        
+                                        if (existingPerson != null)
+                                        {
+                                            existingPerson.Update(employee.Person);
+                                        }
+                                        else
+                                        {
+                                            db.Persons.Add(employee.Person);
+                                        }
+                                    }
+
+                                    if (employee.Login != null)
+                                    {
+                                        var existingLogin = await db.Logins.FindAsync(employee.Login.Id);
+
+                                        if (existingLogin != null)
+                                        {
+                                            existingLogin.Update(employee.Login);
+                                        }
+                                        else
+                                        {
+                                            db.Logins.Add(employee.Login);
+                                        }
+                                    }
+
+                                    employee.Department = null;
+                                    employee.JobTitle = null;
+                                    if (employee.Person != null) employee.Person.City = null;
+                                    employee.Person = null;
+                                    employee.Login = null;
+
+                                    employee.LastModifyDate = DateTime.Now;
+
+                                    var existingEmployee = await db.Employees.FindAsync(employee.Id);
+
+                                    if (existingEmployee != null)
+                                    {
+                                        if (employee.PersonalPhoto != null)
+                                        {
+                                            db.PersonalPhotos.RemoveRange(employeePhotos.Where(ep =>
+                                                ep.PersonalPhotoHash == employee.PersonalPhotoHash));
+                                            employee.PersonalPhoto.PersonalPhotoHash = employee.PersonalPhotoHash;
+                                            db.PersonalPhotos.Add(employee.PersonalPhoto);
+                                        }
+
+                                        existingEmployee.Update(employee);
+                                    }
+                                    else
+                                    {
+                                        employee.CreateDate = DateTimeOffset.Now.ToOffset(TimeSpan.Zero);
+                                        db.Employees.Add(employee);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    _context.WriteLine($"Ошибка импорта {employee}: {e.Message} ", ConsoleTextColor.Red);
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
                         }
-                        else
-                        {
-                            db.Departments.Add(item.Department);
-                        }
-                    }
-
-                    if (item.JobTitle != null)
-                    {
-                        var existingJobTitle = await db.JobTitles.FindAsync(item.JobTitle.Id);
-
-                        if (existingJobTitle != null)
-                        {
-                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingJobTitle))
-                                db.Entry(existingJobTitle).CurrentValues.SetValues(item.JobTitle);
-                        }
-                        else
-                        {
-                            db.JobTitles.Add(item.JobTitle);
-                        }
-                    }
-
-                    if (item.Person != null)
-                    {
-                        var existingPerson = await db.Persons.FindAsync(item.Person.Id);
-
-                        if (existingPerson != null)
-                        {
-                            if (db.ChangeTracker.Entries().All(e => e.Entity != existingPerson))
-                                db.Entry(existingPerson).CurrentValues.SetValues(item.Person);
-                        }
-                        else
-                        {
-                            db.Persons.Add(item.Person);
-                        }
-                    }
-
-                    if (item.Login != null)
-                    {
-                        var existingLogin = await db.Logins.FindAsync(item.Login.Id);
-
-                        if (existingLogin != null)
-                        {
-                            if (!db.ChangeTracker.Entries().Any(e => e.Entity == existingLogin))
-                                db.Entry(existingLogin).CurrentValues.SetValues(item.Login);
-                        }
-                        else
-                        {
-                            db.Logins.Add(item.Login);
-                        }
-                    }
-
-                    item.Department = null;
-                    item.JobTitle = null;
-                    item.Person = null;
-                    item.Login = null;
-
-                    item.LastModifyDate = DateTime.Now;
-
-                    var existingEmployee = await db.Employees.FindAsync(item.Id);
-
-                    if (existingEmployee != null)
-                    {
-                        if (item.PersonalPhoto != null)
-                        {
-                            db.PersonalPhotos.RemoveRange(employeePhotos.Where(ep => ep.PersonalPhotoHash == item.PersonalPhotoHash));
-                            item.PersonalPhoto.PersonalPhotoHash = item.PersonalPhotoHash;
-                            db.PersonalPhotos.Add(item.PersonalPhoto);
-                        }
-
-                        db.Entry(existingEmployee).CurrentValues.SetValues(item);
                     }
                     else
                     {
-                        db.Employees.Add(item);
+                        _context.WriteLine($"Данные для импорта отсутствуют");
                     }
-
                 }
-                catch (Exception e)
+                else
                 {
-                    _context.WriteLine($"Ошибка импорта {item}: {e.Message} ");
+                    _context.WriteLine($"Ошибка при выполнении запроса: {response.StatusCode}", ConsoleTextColor.Red);
                 }
             }
-
-            await db.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _context.WriteLine($"Ошибка: {e.InnerException?.Message}", ConsoleTextColor.Red);
+        }
+        finally
+        {
+            _context.WriteLine($"Импорт сотрудников завершен...", ConsoleTextColor.Green);
         }
     }
 
-    /*private async Task<List<Person>> GetPersons(ODataClient oDataClient)
+    [JobDisplayName("Импорт данных о замещении")]
+    public async Task ImportSubstitutions(PerformContext context)
     {
-        var result = await oDataClient.For<Person>()
-            .Expand(x => x.City)
-            .FindEntriesAsync();
-        return result.ToList();
-    }*/
+        _context = context;
+        _context.WriteLine("Начало импорта данных о замещении из DirectumRx...");
+
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_login}:{_password}"));
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", authenticationHeaderValue);
+
+                HttpResponseMessage response = await client.GetAsync(
+                    $"{_host}ISubstitutions?$expand=*");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+
+                    var result = JsonConvert.DeserializeObject<SubstitutionsResponse>(json);
+
+                    if (result?.Value != null)
+                    {
+                        await using (var db = new ApplicationDbContext())
+                        {
+                            var progressBar = _context.WriteProgressBar();
+                            
+                            foreach (var substitution in result.Value.WithProgress(progressBar))
+                            {
+                                try
+                                {
+                                    _context.WriteLine($"Импорт замещения: {substitution.Name}");
+                                    
+                                    substitution.UserId = substitution.User?.Id;
+                                    substitution.SubstituteId = substitution.Substitute?.Id;
+
+                                    substitution.User = null;
+                                    substitution.Substitute = null;
+                                    
+                                    var existingSubstitution = await db.Substitutions.FindAsync(substitution.Id);
+
+                                    if (existingSubstitution != null)
+                                    {
+                                        existingSubstitution.Update(substitution);
+                                    }
+                                    else
+                                    {
+                                        db.Substitutions.Add(substitution);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    _context.WriteLine($"Ошибка импорта {substitution.Name}: {e.Message}", ConsoleTextColor.Red);
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        _context.WriteLine($"Данные для импорта отсутствуют", ConsoleTextColor.Red);
+                    }
+                }
+                else
+                {
+                    _context.WriteLine($"Ошибка при выполнении запроса: {response.StatusCode}", ConsoleTextColor.Red);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            _context.WriteLine($"Ошибка импорта замещений: {e.InnerException?.Message}", ConsoleTextColor.Red);
+        }
+        finally
+        {
+            _context.WriteLine($"Импорт замещений завершен...", ConsoleTextColor.Green);
+        }
+    }
+    
+    private async Task ImportOrganization()
+    {
+        _context.WriteLine("Начало импорта данных организации из DirectumRx...");
+
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_login}:{_password}"));
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", authenticationHeaderValue);
+
+                HttpResponseMessage response = await client.GetAsync(
+                    $"{_host}IBusinessUnits?$filter=Status eq 'Active'");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+
+                    var result = JsonConvert.DeserializeObject<OrganizationResponse>(json);
+
+                    if (result?.Value != null)
+                    {
+                        await using (var db = new ApplicationDbContext())
+                        {
+                            var progressBar = _context.WriteProgressBar();
+                            
+                            foreach (var organization in result.Value.WithProgress(progressBar))
+                            {
+                                try
+                                {
+                                    _context.WriteLine($"Импорт организации: {organization.Name}");
+
+                                    var existingOrganization = await db.Organizations.FindAsync(organization.Id);
+
+                                    if (existingOrganization != null)
+                                    {
+                                        existingOrganization.Update(organization);
+                                    }
+                                    else
+                                    {
+                                        db.Organizations.Add(organization);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    _context.WriteLine($"Ошибка импорта {organization.Name}: {e.Message}", ConsoleTextColor.Red);
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        _context.WriteLine($"Данные для импорта отсутствуют", ConsoleTextColor.Red);
+                    }
+                }
+                else
+                {
+                    _context.WriteLine($"Ошибка при выполнении запроса: {response.StatusCode}", ConsoleTextColor.Red);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            _context.WriteLine($"Ошибка импорта организации: {e.InnerException?.Message}", ConsoleTextColor.Red);
+        }
+        finally
+        {
+            _context.WriteLine($"Импорт организаций завершен...", ConsoleTextColor.Green);
+        }
+    }
     
     public async Task<bool> Login(string login, string password)
     {
         var requestUrl = $"{_host}$metadata/";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
         var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{login}:{password}"));
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authenticationHeaderValue);
+        request.Headers.Authorization =
+            new AuthenticationHeaderValue("Basic", authenticationHeaderValue);
 
         using (var httpClient = new HttpClient())
         {
             var response = await httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
+    }
+
+    /// <summary>
+    /// Сохранение истории изменений Подразделения/Должности/Фамилии
+    /// </summary>
+    /// <param name="newValue">Новое значение</param>
+    /// <param name="oldValue">Старое значение</param>
+    /// <param name="personId">Id персоны</param>
+    /// <param name="db">Контекст БД</param>
+    /// <typeparam name="T">Тип объекта, с которым работает метод (Department, JobTitle, Person).</typeparam>
+    private async Task SetChanges<T>(T newValue, T oldValue, int personId, ApplicationDbContext db)
+    {
+        var item = new PersonChange();
+        
+        var type = typeof(T);
+        switch (type.Name)
+        {
+            case "Department":
+                item.Type = ChangeType.Department;
+                item.OldValue = (oldValue as Department)?.Name ?? "-";
+                item.NewValue = (newValue as Department)?.Name ?? "-";
+                break;
+            case "JobTitle":
+                item.Type = ChangeType.JobTitle;
+                item.OldValue = (oldValue as JobTitle)?.Name ?? "-";
+                item.NewValue = (newValue as JobTitle)?.Name ?? "-";
+                break;
+            case "Person":
+                item.Type = ChangeType.Lastname;
+                item.OldValue = (oldValue as Person)?.LastName ?? "-";
+                item.NewValue = (newValue as Person)?.LastName ?? "-";
+                break;
+        }
+
+        item.PersonId = personId;
+        
+        await db.PersonChanges.AddAsync(item);
     }
 }
