@@ -76,6 +76,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login()
     {
+        ViewBag.Title = "Авторизация";
         return View(new LoginViewModel());
     }
     

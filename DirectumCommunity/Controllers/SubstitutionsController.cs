@@ -24,4 +24,11 @@ public class SubstitutionsController : BaseController
         ViewBag.Title = "Календарь отсутствий";
         return View();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllSubstitutionsInMonth(int year, int month)
+    {
+        var substitutions = await _substitutionService.GetAllSubstitutionsInMonth(year, month);
+        return Json(substitutions);
+    }
 }

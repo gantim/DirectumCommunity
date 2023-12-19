@@ -29,15 +29,9 @@
         <_ContentIncludedByDefault Remove="Views\Directum\Index.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Directum\Privacy.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Directum\Workers.cshtml"/>
-
-
-
-
-
-
     </ItemGroup>
-
-
-
-
+    
+    <ItemGroup>
+        <Folder Include="wwwroot\lib\select2\" />
+    </ItemGroup>
 </Project>

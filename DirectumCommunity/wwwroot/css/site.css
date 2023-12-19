@@ -257,18 +257,43 @@ body, .container-fluid, h1, a, span, input {
   color: #000000;
 }
 
-.calendar-day {
+.calendar-month {
   text-align: center;
   color: black;
-  font-size: 10px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
-  padding: 5px;
   border: 1px solid #FC8404;
-  width: 24px;
-  height: 40px;
   border-radius: 0;
   display: inline-block;
+  padding: 5px;
+  width: 85px;
+}
+
+.calendar-month:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.calendar-month:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.calendar-day {
+  width: 33px;
+  text-align: center;
+  color: black;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  border: 1px solid #FC8404;
+  border-radius: 0;
+  display: inline-block;
+  padding: 5px;
+}
+
+.calendar-day p{
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .calendar-day:first-child {
@@ -279,4 +304,80 @@ body, .container-fluid, h1, a, span, input {
 .calendar-day:last-child {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.left-right-button .btn {
+  width: 40px;
+  height: 40px;
+  background-color: #FC8404;
+  border-color: #FC8404;
+  color: black;
+  padding: 0;
+  font-size: 14px;
+}
+.left-right-button .btn:hover {
+  background-color: #FFA94D;
+  border-color: #FFA94D;
+  color: black;
+}
+.left-right-button .btn:active {
+  border-color: #FC8404;
+  background-color: #FFFFFF;
+}
+
+.left-right-button .btn img{
+  width: 10px;
+  height: 10px;
+}
+
+.row-margin-bottom{
+  margin-bottom: 14px;
+}
+
+.filter-btn-custom {
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  background-color: #FF8600;
+  border-color: #FF8600;
+  color: black;
+  width: 250px;
+}
+
+.filter-btn-custom:hover {
+  background-color: #FFFFFF;
+  border-color: #FF8600;
+  color: black;
+}
+
+.filter-btn-custom:active {
+  background-color: #FFFFFF;
+  border-color: #FF8600;
+  color: black;
+}
+
+.filter-btn-custom img{
+  width: 18px;
+  height: 18px;
+}
+
+.month-header{
+  color: black;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+.export-data-text{
+  color: black;
+  font-size: 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  text-decoration: underline;
+  word-wrap: break-word;
+}
+
+.substitutions-avatar{
+  width: 40px;
+  height: 40px;
 }

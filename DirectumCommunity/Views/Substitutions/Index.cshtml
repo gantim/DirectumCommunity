@@ -1,43 +1,137 @@
-﻿@{
+﻿@using System.Globalization
+@{
     Layout = "_Layout";
+    var currentMonth = CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.GetMonthName(DateTime.Now.Month).First().ToString().ToUpper() + CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.GetMonthName(DateTime.Now.Month)[1..];
+    var currentYear = DateTime.Today.Year;
 }
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm">
+    <div class="row row-margin-bottom">
+        <div class="col">
+            <div class="dropdown custom-dropdown">
+                <button class="btn filter-btn-custom dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="~/images/FilterIcon.svg" alt="Filter"/> Фильтр по сотрудникам: все
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown" style="width: 250px;">
+                    <li>
+                        <div class="row">
+                            <div class="col">
+                                <select id="fioFilter">
+                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
+                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
+                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <select id="jobTitleFilter">
+                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
+                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
+                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <select id="departmentFilter">
+                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
+                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
+                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center">
+            <span class="month-header" id="currentDateBox"></span>
+        </div>
+        <div class="col d-flex align-items-center">
+            <a class="export-data-text" href="#">Выгрузить данные</a>
+        </div>
+        <div class="col">
+            <div class="dropdown custom-dropdown">
+                <button class="btn filter-btn-custom dropdown-toggle" type="button" id="filterInfoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="~/images/FilterIcon.svg" alt="Filter"/> Фильтр информации
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterInfoDropdown" style="width: 250px;">
+                    <li>
+                        <span>test data</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row row-margin-bottom">
+        <div class="col-md-auto">
             <div class="btn-group btn-toggle-group filter-year-month">
                 <button class="btn btn-sm active" id="monthButtonSub">Месяц</button>
                 <button class="btn btn-sm" id="yearButtonSub">Год</button>
             </div>
         </div>
-        <div class="col-sm-10">
+        <div class="col-md-auto">
+            <div class="btn-group left-right-button" role="group">
+                <button type="button" class="btn" id="leftButton">
+                    <img src="~/images/LeftArrow.svg" alt="Left"/>
+                </button>
+                <button type="button" class="btn" id="rightButton">
+                    <img src="~/images/RightArrow.svg" alt="Right"/>
+                </button>
+            </div>
+        </div>
+        <div class="col" style="display: flex; justify-content: flex-end;">
             <div id="calendar" class="calendar">
                 <!-- Сюда будут добавлены числа и дни недели -->
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered" id="substitutionsTable">
+                <tbody>
+                @*<tr style="height: 70px;">
+                    <td></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                    <td style="width: 33px;"></td>
+                </tr>*@
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
 <script>
-    // Получаем элемент календаря
-    const calendar = document.getElementById('calendar');
-
-    // Создаем массив с названиями дней недели
-    const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-
-    // Функция для добавления чисел и дней недели
-    function createCalendar() {
-      const daysInMonth = 31; // Количество дней в месяце, замените на актуальное значение
-
-      for (let i = 1; i <= daysInMonth; i++) {
-          
-        const date = new Date(2023, 11, i); // Укажите год и месяц
-        const dayOfWeek = daysOfWeek[date.getDay()];
-        const day = document.createElement('div');
-        day.classList.add('calendar-day');
-        day.textContent = i + ' ' + dayOfWeek;
-        calendar.appendChild(day);
-      }
-    }
-    createCalendar();
-  </script>
+var defaultAvatar = '@Url.Content("~/images/DefaultEmployeeAvatar.svg")';
+</script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/calendar.js"></script>
