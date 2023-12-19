@@ -1,4 +1,5 @@
-﻿using DirectumCommunity.Services;
+﻿using DirectumCommunity.Models.ViewModels;
+using DirectumCommunity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,10 +26,11 @@ public class SubstitutionsController : BaseController
         return View();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllSubstitutionsInMonth(int year, int month)
+    [HttpPost]
+    public async Task<IActionResult> GetAllSubstitutionsInMonth([FromBody]SubstitutionRequest request)
     {
-        var substitutions = await _substitutionService.GetAllSubstitutionsInMonth(year, month);
+        var substitutions =
+            await _substitutionService.GetAllSubstitutionsInMonth(request.Year, request.Month, request.Filter);
         return Json(substitutions);
     }
 }

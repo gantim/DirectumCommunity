@@ -56,9 +56,30 @@
                 <button class="btn filter-btn-custom dropdown-toggle" type="button" id="filterInfoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="~/images/FilterIcon.svg" alt="Filter"/> Фильтр информации
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="filterInfoDropdown" style="width: 250px;">
+                <ul class="dropdown-menu" aria-labelledby="filterInfoDropdown" style="width: 250px; padding: 5px;">
                     <li>
-                        <span>test data</span>
+                        <div class="row align-items-center">
+                        	<div class="col-md-auto">
+                            	<div class="circle-marker mr-3" style="background-color: #23CC71;"></div>
+                            </div>
+                            <div class="col">
+                            	<span class="drop-info-text">Оформленный отпуск</span>
+                            </div>
+                            <div class="col-md-auto form-check">
+                            	<input class="form-check-input" id="isVacation" type="checkbox">
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-auto">
+                                <div class="circle-marker mr-3" style="background-color: #CC3A3A;"></div>
+                            </div>
+                            <div class="col">
+                                <span class="drop-info-text">Внеплановое отсутствие</span>
+                            </div>
+                            <div class="col-md-auto form-check">
+                                <input class="form-check-input" id="isMedicalLeave" type="checkbox">
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>

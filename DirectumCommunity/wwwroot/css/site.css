@@ -381,3 +381,20 @@ body, .container-fluid, h1, a, span, input {
   width: 40px;
   height: 40px;
 }
+
+.circle-marker {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.custom-dropdown ul{
+  border: #FF9520 solid 1px;
+}
+
+.drop-info-text{
+  color: black;
+  font-size: 13px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}

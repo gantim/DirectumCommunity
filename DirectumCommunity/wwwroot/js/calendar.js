@@ -168,10 +168,25 @@ function next() {
 }
 
 function getAllSubstitutionsInMonth(year, month, days) {
+    const isVacation = $('#isVacation').is(':checked') ? 1 : 0;
+    const isMedicalLeave = $('#isMedicalLeave').is(':checked') ? 1 : 0;
+
+    let requestData = {
+        year: year,
+        month: month,
+        filter: {
+            IsVacation: isVacation,
+            IsMedicalLeave: isMedicalLeave
+        }
+    };
+    
+    let request = JSON.stringify(requestData);
+    
     $.ajax({
         url: '/Substitutions/GetAllSubstitutionsInMonth',
-        method: 'GET',
-        data: { year: year, month: month },
+        method: 'POST',
+        data: request,
+        contentType: 'application/json',
         dataType: 'json',
         success: function (data) {
             createEmployeeRows(data, days);
@@ -184,6 +199,9 @@ function getAllSubstitutionsInMonth(year, month, days) {
 }
 
 $(document).ready(function(){
+    $('#isMedicalLeave').prop('checked', true);
+    $('#isVacation').prop('checked', true);
+    
     updateDisplay();
     
     $('#leftButton').click(function() {
@@ -205,6 +223,10 @@ $(document).ready(function(){
         $('#yearButtonSub').addClass('active');
         $('#monthButtonSub').removeClass('active');
         dateType = 2;
+        updateDisplay();
+    });
+
+    $('#isVacation, #isMedicalLeave').change(function() {
         updateDisplay();
     });
 });

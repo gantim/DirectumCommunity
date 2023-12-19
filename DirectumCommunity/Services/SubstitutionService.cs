@@ -9,7 +9,7 @@ public class SubstitutionService
 {
     private readonly EmployeeService _employeeService = new();
 
-    public async Task<List<SubstitutionInMonth>> GetAllSubstitutionsInMonth(int year, int month)
+    public async Task<List<SubstitutionInMonth>> GetAllSubstitutionsInMonth(int year, int month, SubstitutionFilter? filter = null)
     {
         var substitutionsInMonth = new List<SubstitutionInMonth>();
         await using (var db = new ApplicationDbContext())
@@ -44,6 +44,26 @@ public class SubstitutionService
                 
                 substitutionsInMonth.Add(substitutionInMonth);
             }
+        }
+
+        if (filter != null)
+        {
+            substitutionsInMonth = substitutionsInMonth
+                .Select(substitution => new SubstitutionInMonth
+                {
+                    Id = substitution.Id,
+                    Name = substitution.Name,
+                    Avatar = substitution.Avatar,
+                    Department = substitution.Department,
+                    Substitutions = substitution.Substitutions
+                        .Where(item =>
+                            ((filter.IsVacation == 1 ||
+                              (filter.IsVacation == 0 && item.TypeReason == 1)) &&
+                             (filter.IsMedicalLeave == 1 ||
+                              (filter.IsMedicalLeave == 0 && item.TypeReason == 2))))
+                        .ToList()
+                })
+                .ToList();
         }
 
         return substitutionsInMonth;
