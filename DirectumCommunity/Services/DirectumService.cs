@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Text;
 using DirectumCommunity.Models;
 using DirectumCommunity.Models.Responses;
@@ -78,16 +78,25 @@ public class DirectumService : IDirectumService
                                         employee.Person.CityId = employee.Person?.City?.Id;
                                     }
 
+                                    var existingEmployee = await db.Employees
+                                        .Include(e => e.Department)
+                                        .Include(e => e.JobTitle)
+                                        .FirstOrDefaultAsync(e => e.Id == employee.Id);
+                                    
                                     if (employee.Department != null)
                                     {
                                         var existingDepartment = await db.Departments.FindAsync(employee.Department.Id);
 
-                                        if (employee.Department.Id != existingDepartment?.Id)
+                                        if (employee.Department.Id != existingEmployee?.DepartmentId)
                                         {
-                                            await SetChanges(employee.Department, existingDepartment,
-                                                employee.PersonId.Value, db);
+                                            if (existingEmployee?.DepartmentId == null ||
+                                                employee.Department.Id != existingEmployee?.DepartmentId)
+                                            {
+                                                await SetChanges(employee.Department, existingEmployee?.Department,
+                                                    employee.PersonId.Value, db);
+                                            }
                                         }
-                                        
+
                                         if (existingDepartment != null)
                                         {
                                             existingDepartment.Update(employee.Department);
@@ -101,11 +110,15 @@ public class DirectumService : IDirectumService
                                     if (employee.JobTitle != null)
                                     {
                                         var existingJobTitle = await db.JobTitles.FindAsync(employee.JobTitle.Id);
-
-                                        if (employee.JobTitle.Id != existingJobTitle?.Id)
+                                        
+                                        if (employee.JobTitle.Id != existingEmployee?.JobTitleId)
                                         {
-                                            await SetChanges(employee.JobTitle, existingJobTitle,
-                                                employee.PersonId.Value, db);
+                                            if (existingEmployee?.JobTitleId == null ||
+                                                employee.JobTitle.Id != existingEmployee?.JobTitleId)
+                                            {
+                                                await SetChanges(employee.JobTitle, existingEmployee?.JobTitle,
+                                                    employee.PersonId.Value, db);
+                                            }
                                         }
                                         
                                         if (existingJobTitle != null)
@@ -174,18 +187,16 @@ public class DirectumService : IDirectumService
 
                                     employee.LastModifyDate = DateTime.Now;
 
-                                    var existingEmployee = await db.Employees.FindAsync(employee.Id);
-
+                                    if (employee.PersonalPhoto != null)
+                                    {
+                                        db.PersonalPhotos.RemoveRange(employeePhotos.Where(ep =>
+                                            ep.PersonalPhotoHash == employee.PersonalPhotoHash));
+                                        employee.PersonalPhoto.PersonalPhotoHash = employee.PersonalPhotoHash;
+                                        db.PersonalPhotos.Add(employee.PersonalPhoto);
+                                    }
+                                    
                                     if (existingEmployee != null)
                                     {
-                                        if (employee.PersonalPhoto != null)
-                                        {
-                                            db.PersonalPhotos.RemoveRange(employeePhotos.Where(ep =>
-                                                ep.PersonalPhotoHash == employee.PersonalPhotoHash));
-                                            employee.PersonalPhoto.PersonalPhotoHash = employee.PersonalPhotoHash;
-                                            db.PersonalPhotos.Add(employee.PersonalPhoto);
-                                        }
-
                                         existingEmployee.Update(employee);
                                     }
                                     else
@@ -405,6 +416,8 @@ public class DirectumService : IDirectumService
     /// <typeparam name="T">Тип объекта, с которым работает метод (Department, JobTitle, Person).</typeparam>
     private async Task SetChanges<T>(T newValue, T oldValue, int personId, ApplicationDbContext db)
     {
+        var hasPerson = await db.Persons.AnyAsync(p => p.Id == personId);
+        
         var item = new PersonChange();
         
         var type = typeof(T);
@@ -421,9 +434,16 @@ public class DirectumService : IDirectumService
                 item.NewValue = (newValue as JobTitle)?.Name ?? "-";
                 break;
             case "Person":
-                item.Type = ChangeType.Lastname;
-                item.OldValue = (oldValue as Person)?.LastName ?? "-";
-                item.NewValue = (newValue as Person)?.LastName ?? "-";
+                if (hasPerson)
+                {
+                    item.Type = ChangeType.Lastname;
+                    item.OldValue = (oldValue as Person)?.LastName ?? "-";
+                    item.NewValue = (newValue as Person)?.LastName ?? "-";
+                }
+                else
+                {
+                    return;
+                }
                 break;
         }
 

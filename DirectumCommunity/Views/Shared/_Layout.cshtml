@@ -11,6 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="row loading-container align-items-center">
+        <div class="col spinner-border" role="status"></div>
+        <div class="col">Загрузка...</div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="row no-gutters">
         <!-- Sidebar -->
@@ -32,9 +40,9 @@
                 </ul>
             </div>
         </nav>
-        
+
         <div class="col-md-1 separator"></div>
-        
+
         <main role="main" class="col-md">
 
             <div class="row" style="margin-bottom: 40px;">
@@ -55,7 +63,7 @@
                         </div>
                         <div class="col">
                             <div class="circle-text">
-                                @if(string.IsNullOrEmpty(ViewBag.Photo))
+                                @if (string.IsNullOrEmpty(ViewBag.Photo))
                                 {
                                     <span class="circle-text-inner">@ViewBag.Initials</span>
                                 }
@@ -63,22 +71,22 @@
                                 {
                                     <img class="circle-image" src="data:image/jpeg;base64,@ViewBag.Photo">
                                 }
-                            </div>                       
+                            </div>
                         </div>
                         <div class="col">
                             <div class="dropdown">
                                 <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                     @ViewData["UserName"]
                                 </a>
-                                             
+
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <li>
                                         <form method="post" asp-controller="Account" asp-action="Logout">
-                                            <input class="dropdown-item" type="submit" value="Выход" />
+                                            <input class="dropdown-item" type="submit" value="Выход"/>
                                         </form>
                                     </li>
                                 </ul>
-                            </div>                       
+                            </div>
                         </div>
                     </div>
                 </div>

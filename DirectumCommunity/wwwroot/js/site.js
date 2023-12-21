@@ -32,6 +32,7 @@
         });
     
     $('.employee-info').click(function () {
+        showLoading();
         let id = $(this).data('employee-id');
         $.ajax({
             url: '/Employees/GetEmployeeInfo',
@@ -42,7 +43,18 @@
                 modalInfo.empty();
                 modalInfo.html(data);
                 $('#employeeModal').modal('show');
+            },
+            complete: function(data) {
+                hideLoading();
             }
         });
     });
 });
+
+function showLoading() {
+    $('#loadingOverlay').show();
+}
+
+function hideLoading() {
+    $('#loadingOverlay').hide();
+}

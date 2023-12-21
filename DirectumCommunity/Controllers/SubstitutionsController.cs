@@ -33,4 +33,12 @@ public class SubstitutionsController : BaseController
             await _substitutionService.GetAllSubstitutionsInMonth(request.Year, request.Month, request.Filter);
         return Json(substitutions);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> GetAllSubstitutionsInYear([FromBody]SubstitutionRequest request)
+    {
+        var substitutions =
+            await _substitutionService.GetAllSubstitutionsInYear(request.Year, request.Filter);
+        return Json(substitutions);
+    }
 }

@@ -398,3 +398,74 @@ body, .container-fluid, h1, a, span, input {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-container {
+  background-color: rgba(255, 255, 255);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+  color: #FF8600D9;
+}
+
+.page-link {
+  color: #000000 !important;
+  background-color: transparent !important;
+  border-color: #FF8600D9 !important;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.page-item.active .page-link {
+  background-color: #FF8600D9 !important;
+  border-color: #FF8600D9 !important;
+}
+
+.page-link:hover {
+  background-color: #FF8600D9 !important;
+  border-color: #FF8600D9 !important;
+}
+
+.table-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Добавьте полосы прокрутки при необходимости */
+}
+
+.table-in-cell {
+  width: 100%;
+  height: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.table-in-cell td {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+#substitutionsTable tr{
+  color: black;
+  font-size: 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+}

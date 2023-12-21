@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Employee>
+﻿@using X.PagedList.Web.Common
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Employee>
 @{
     Layout = "_Layout";
 }
@@ -10,6 +12,32 @@
             @await Html.PartialAsync("EmployeeInfo", employee)
         }
     </div>
+</div>
+
+<div class="container">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            
+            <li class="page-item @(Model.IsFirstPage ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.HasPreviousPage ? Model.PageNumber - 1 : 1 })">
+                    <img src="~/images/LeftArrow.svg" alt="Left"/>
+                </a>
+            </li>
+            
+            @for (var pageNumber = 1; pageNumber <= Model.PageCount; pageNumber++)
+            {
+                <li class="page-item @(pageNumber == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = pageNumber })">@pageNumber</a>
+                </li>
+            }
+            
+            <li class="page-item @(Model.IsLastPage ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.HasNextPage ? Model.PageNumber + 1 : Model.PageCount })">
+                    <img src="~/images/RightArrow.svg" alt="Left"/>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
 <div id="employeeInfoModal"></div>

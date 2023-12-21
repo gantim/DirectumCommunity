@@ -6,15 +6,35 @@ namespace DirectumCommunity.Services;
 
 public class EmployeeService
 {
-    public async Task<List<Employee>> GetAll()
+    public async Task<int> GetTotalCount()
     {
         await using (var db = new ApplicationDbContext())
         {
-            var employees = await db.Employees.Include(e => e.Department)
+            return await db.Employees.CountAsync();
+        }
+    }
+    
+    public async Task<List<Employee>> GetAll(int? pageNumber = null, int? pageSize = null)
+    {
+        await using (var db = new ApplicationDbContext())
+        {
+            var employees = await db.Employees
+                .Include(e => e.Department)
                 .Include(e => e.JobTitle)
                 .Include(e => e.Person)
                 .Include(l => l.Login)
+                .OrderBy(e => e.Id)
                 .ToListAsync();
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                var totalCount = employees.Count;
+
+                employees = employees
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+            }
 
             foreach (var employee in employees)
             {

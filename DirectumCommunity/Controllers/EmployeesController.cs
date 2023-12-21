@@ -2,6 +2,7 @@
 using DirectumCommunity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using X.PagedList;
 
 namespace DirectumCommunity.Controllers;
 
@@ -17,18 +18,22 @@ public class EmployeesController : BaseController
         _logger = logger;
     }
     
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? page)
     {
-        var list = await EmployeeService.GetAll();
+        var pageNumber = page ?? 1;
+        var pageSize = 6;
+        
+        var list = await EmployeeService.GetAll(pageNumber, pageSize);
+        var totalCount = await EmployeeService.GetTotalCount();
+        var pagedEmployees = new StaticPagedList<Employee>(list, pageNumber, pageSize, totalCount);
         ViewBag.Title = "Наши сотрудники";
-        return View(list);
+        return View(pagedEmployees);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetEmployeeInfo(int id)
     {
         var employee = await EmployeeService.GetByIdWithChanges(id);
-
         return PartialView("EmployeeInfoModal", employee);
     }
     
