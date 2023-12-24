@@ -1,4 +1,5 @@
-﻿using DirectumCommunity.Models.ViewModels;
+﻿using System.Text;
+using DirectumCommunity.Models.ViewModels;
 using DirectumCommunity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,9 @@ public class SubstitutionsController : BaseController
     
     public async Task<IActionResult> Index()
     {
+        var filters = await _substitutionService.GetFilters();
         ViewBag.Title = "Календарь отсутствий";
-        return View();
+        return View(filters);
     }
 
     [HttpPost]
@@ -40,5 +42,11 @@ public class SubstitutionsController : BaseController
         var substitutions =
             await _substitutionService.GetAllSubstitutionsInYear(request.Year, request.Filter);
         return Json(substitutions);
+    }
+
+    [HttpPost]
+    public FileResult ExportToExcel(string htmlTable)
+    {
+        return File(Encoding.ASCII.GetBytes(htmlTable), "application/vnd.ms-excel", "test.xlsx");
     }
 }

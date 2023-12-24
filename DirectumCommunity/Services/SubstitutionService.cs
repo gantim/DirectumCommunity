@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using DirectumCommunity.Models;
 using DirectumCommunity.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectumCommunity.Services;
@@ -16,6 +17,14 @@ public class SubstitutionService
         {
             var employees = await _employeeService.GetAll();
 
+            if (filter != null)
+            {
+                employees = employees.Where(e =>
+                    (e.Id == filter.EmployeeId || filter.EmployeeId == 0) &&
+                    (e.JobTitleId == filter.JobTitleId || filter.JobTitleId == 0) &&
+                    (e.DepartmentId == filter.DepartmentId || filter.DepartmentId == 0)).ToList();
+            }
+            
             foreach (var employee in employees)
             {
                 var substitutionInYear = new SubstitutionInYear()
@@ -88,10 +97,18 @@ public class SubstitutionService
         {
             var employees = await _employeeService.GetAll();
 
+            if (filter != null)
+            {
+                employees = employees.Where(e =>
+                    (e.Id == filter.EmployeeId || filter.EmployeeId == 0) &&
+                    (e.JobTitleId == filter.JobTitleId || filter.JobTitleId == 0) &&
+                    (e.DepartmentId == filter.DepartmentId || filter.DepartmentId == 0)).ToList();
+            }
+            
             foreach (var employee in employees)
             {
                 var substitutions = await GetMonthSubstitutionByEmployeeId(employee.Id, year, month);
-                
+
                 var substitutionInMonth = new SubstitutionInMonth()
                 {
                     Id = employee.Id,
@@ -99,7 +116,7 @@ public class SubstitutionService
                     Department = employee.Department?.Name,
                     Name = $"{employee.Person?.LastName} {employee.Person?.FirstName}"
                 };
-                
+
                 foreach (var substitution in substitutions)
                 {
                     substitutionInMonth.Substitutions.Add(new SubstitutionItem()
@@ -113,7 +130,7 @@ public class SubstitutionService
                         TypeReason = GetTypeReason(substitution.Comment)
                     });
                 }
-                
+
                 substitutionsInMonth.Add(substitutionInMonth);
             }
         }
@@ -173,6 +190,38 @@ public class SubstitutionService
                 .ThenInclude(s => s!.Department)
                 .Where(s => s.UserId == id && s.StartDate <= end && s.EndDate >= start)
                 .ToListAsync();
+        }
+    }
+
+    public async Task<SubstitutionFilters> GetFilters()
+    {
+        await using (var db = new ApplicationDbContext())
+        {
+            var filters = new SubstitutionFilters();
+            
+            var employeesFio = await db.Employees.Select(e => new SelectListItem()
+            {
+                Value = e.Id.ToString(),
+                Text = e.Name
+            }).ToListAsync();
+            
+            var jobTitles = await db.JobTitles.Select(j => new SelectListItem()
+            {
+                Value = j.Id.ToString(),
+                Text = j.Name
+            }).ToListAsync();
+            
+            var departments = await db.Departments.Select(d => new SelectListItem()
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            }).ToListAsync();
+            
+            filters.EmployeesFio.AddRange(employeesFio);
+            filters.JobTitles.AddRange(jobTitles);
+            filters.Departments.AddRange(departments);
+
+            return filters;
         }
     }
 }

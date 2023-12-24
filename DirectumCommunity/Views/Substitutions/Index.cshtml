@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@model DirectumCommunity.Models.ViewModels.SubstitutionFilters
 @{
     Layout = "_Layout";
     var currentMonth = CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.GetMonthName(DateTime.Now.Month).First().ToString().ToUpper() + CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.GetMonthName(DateTime.Now.Month)[1..];
@@ -9,38 +10,41 @@
     <div class="row row-margin-bottom">
         <div class="col">
             <div class="dropdown custom-dropdown">
-                <button class="btn filter-btn-custom dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn filter-btn-custom dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                     <img src="~/images/FilterIcon.svg" alt="Filter"/> Фильтр по сотрудникам: все
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="filterDropdown" style="width: 250px;">
-                    <li>
-                        <div class="row">
-                            <div class="col">
-                                <select id="fioFilter">
-                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
-                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
-                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <select id="jobTitleFilter">
-                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
-                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
-                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <select id="departmentFilter">
-                                    <option value="1" title="Описание элемента 1">Элемент 1</option>
-                                    <option value="2" title="Описание элемента 2">Элемент 2</option>
-                                    <option value="3" title="Описание элемента 3">Элемент 3</option>
-                                </select>
-                            </div>
-                        </div>
+                    <li style="padding: 5px;">
+                        <select id="fioFilter">
+                            <option value="">Выберите ФИО</option>
+                            @foreach (var item in Model.EmployeesFio)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </li>
+                    <li style="padding: 5px;">
+                        <select id="jobTitleFilter">
+                            <option value="">Выберите должность</option>
+                            @foreach (var item in Model.JobTitles)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </li>
+                    <li style="padding: 5px;">
+                        <select id="departmentFilter">
+                            <option value="">Выберите отдел</option>
+                            @foreach (var item in Model.Departments)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </li>
+                    <li style="padding: 5px;">
+                        <button style="width: 100%;" class="btn filter-btn-custom" type="button" id="applyFilters">
+                            Применить
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -49,7 +53,11 @@
             <span class="month-header" id="currentDateBox"></span>
         </div>
         <div class="col d-flex align-items-center">
-            <a class="export-data-text" href="#">Выгрузить данные</a>
+            <form asp-action="ExportToExcel" asp-controller="Substitutions" method="post">
+                <input type="hidden" name="htmlTable"/>
+                <input type="submit" id="buttonExport" class="export-data-text" value="Выгрузить данные"/>
+            </form>
+            @*<a class="export-data-text" id="exportBtn">Выгрузить данные</a>*@
         </div>
         <div class="col">
             <div class="dropdown custom-dropdown">
@@ -109,44 +117,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col" id="divTable">
             <table class="table table-bordered" id="substitutionsTable">
-                <tbody>
-                @*<tr style="height: 70px;">
-                    <td></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                    <td style="width: 33px;"></td>
-                </tr>*@
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>

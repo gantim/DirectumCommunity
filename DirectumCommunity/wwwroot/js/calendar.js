@@ -7,6 +7,8 @@ const months = [
 const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const calendar = document.getElementById('calendar');
 
+var exportData;
+
 function createCalendar(year, month) {
     const getDays = (year, month) => {
         return new Date(year, month, 0).getDate();
@@ -120,17 +122,47 @@ function createEmployeeRows(jsonData, days, type) {
     });
 }
 
+function getDaysInRangeForMonth(startDate, endDate, targetMonth) {
+    const startMonth = startDate.getMonth();
+    const endMonth = endDate.getMonth();
+
+    let start = new Date(startDate.getFullYear(), targetMonth, 1);
+    let end = new Date(endDate.getFullYear(), targetMonth + 1, 0);
+
+    if (startMonth > targetMonth) {
+        start.setFullYear(start.getFullYear() + 1);
+    }
+    if (endMonth < targetMonth) {
+        end.setFullYear(end.getFullYear() - 1);
+    }
+
+    const daysInRange = [];
+
+    let current = new Date(start);
+
+    while (current <= end) {
+        if (current >= startDate && current <= endDate) {
+            daysInRange.push(current.getDate());
+        }
+        current.setDate(current.getDate() + 1);
+    }
+
+    return daysInRange;
+}
+
 function highlightCells(jsonData, days, type) {
     if(type === 1) {
         jsonData.forEach(employee => {
             employee.substitutions.forEach(substitution => {
                 const startDate = new Date(substitution.startDate);
                 const endDate = new Date(substitution.endDate);
-
-                let currentDay = new Date(startDate);
+                const id = employee.id;
                 
-                while (currentDay <= endDate && endDate.getMonth() === currentDate.getMonth()) {
-                    const cellId = `#cell-${employee.id}-${currentDay.getDate()}-${currentDate.getMonth() + 1}`;
+                for (let current = new Date(startDate); current <= endDate; current.setDate(current.getDate() + 1)) {
+                    const day = current.getDate();
+                    const month = current.getMonth() + 1;
+
+                    const cellId = `#cell-${id}-${day}-${month}`;
 
                     if (substitution.typeReason === 1) {
                         $(cellId).css('border', 'none');
@@ -138,7 +170,7 @@ function highlightCells(jsonData, days, type) {
                         $(cellId).attr({
                             'data-bs-toggle': 'tooltip',
                             'data-bs-html': 'true',
-                            'title': `<div><p>Замещает: ${substitution.substituteName}, ${employee.department}</p><p>Причина: ${substitution.reason}</p></div>`
+                            'title': `<div><p>Замещает: ${substitution.substituteName}, ${substitution.substituteDepartment}</p><p>Причина: ${substitution.reason}</p></div>`
                         });
                     }
 
@@ -148,11 +180,9 @@ function highlightCells(jsonData, days, type) {
                         $(cellId).attr({
                             'data-bs-toggle': 'tooltip',
                             'data-bs-html': 'true',
-                            'title': `<div><p>Замещает: ${employee.name}, ${employee.department}</p><p>Причина: ${substitution.reason}</p></div>`
+                            'title': `<div><p>Замещает: ${substitution.substituteName}, ${substitution.substituteDepartment}</p><p>Причина: ${substitution.reason}</p></div>`
                         });
                     }
-
-                    currentDay.setDate(currentDay.getDate() + 1);
                 }
             });
         });
@@ -175,7 +205,7 @@ function highlightCells(jsonData, days, type) {
                             $(cellId).attr({
                                 'data-bs-toggle': 'tooltip',
                                 'data-bs-html': 'true',
-                                'title': `<div><p>Замещает: ${substitution.substituteName}, ${employee.department}</p><p>Причина: ${substitution.reason}</p></div>`
+                                'title': `<div><p>Замещает: ${substitution.substituteName}, ${substitution.substituteDepartment}</p><p>Причина: ${substitution.reason}</p></div>`
                             });
                         }
 
@@ -185,7 +215,7 @@ function highlightCells(jsonData, days, type) {
                             $(cellId).attr({
                                 'data-bs-toggle': 'tooltip',
                                 'data-bs-html': 'true',
-                                'title': `<div><p>Замещает: ${employee.name}, ${employee.department}</p><p>Причина: ${substitution.reason}</p></div>`
+                                'title': `<div><p>Замещает: ${substitution.substituteName}, ${substitution.substituteDepartment}</p><p>Причина: ${substitution.reason}</p></div>`
                             });
                         }
 
@@ -236,13 +266,19 @@ function next() {
 function getAllSubstitutionsInMonth(year, month, days) {
     const isVacation = $('#isVacation').is(':checked') ? 1 : 0;
     const isMedicalLeave = $('#isMedicalLeave').is(':checked') ? 1 : 0;
+    const employeeId = $('#fioFilter').val() === '' ? 0 : $('#fioFilter').val();
+    const jobTitleId = $('#jobTitleFilter').val() === '' ? 0 : $('#jobTitleFilter').val();
+    const departmentId = $('#departmentFilter').val() === '' ? 0 : $('#departmentFilter').val();
 
     let requestData = {
         year: year,
         month: month,
         filter: {
             IsVacation: isVacation,
-            IsMedicalLeave: isMedicalLeave
+            IsMedicalLeave: isMedicalLeave,
+            EmployeeId: employeeId,
+            JobTitleId: jobTitleId,
+            DepartmentId: departmentId
         }
     };
     
@@ -257,6 +293,7 @@ function getAllSubstitutionsInMonth(year, month, days) {
         contentType: 'application/json',
         dataType: 'json',
         success: function (data) {
+            exportData = data;
             createEmployeeRows(data, days, 1);
             highlightCells(data, days, 1);
         },
@@ -273,11 +310,18 @@ function getAllSubstitutionsInYear(year, days) {
     const isVacation = $('#isVacation').is(':checked') ? 1 : 0;
     const isMedicalLeave = $('#isMedicalLeave').is(':checked') ? 1 : 0;
 
+    const employeeId = $('#fioFilter').val() === '' ? 0 : $('#fioFilter').val();
+    const jobTitleId = $('#jobTitleFilter').val() === '' ? 0 : $('#jobTitleFilter').val();
+    const departmentId = $('#departmentFilter').val() === '' ? 0 : $('#departmentFilter').val();
+
     let requestData = {
         year: year,
         filter: {
             IsVacation: isVacation,
-            IsMedicalLeave: isMedicalLeave
+            IsMedicalLeave: isMedicalLeave,
+            EmployeeId: employeeId,
+            JobTitleId: jobTitleId,
+            DepartmentId: departmentId
         }
     };
 
@@ -292,7 +336,7 @@ function getAllSubstitutionsInYear(year, days) {
         contentType: 'application/json',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
+            exportData = data;
             createEmployeeRows(data, days, 2);
             highlightCells(data, days, 2);
         },
@@ -319,6 +363,12 @@ $(document).ready(function(){
         next();
     });
 
+    $(function (){
+        $("#buttonExport").click(function (){
+            $("input[name='htmlTable']").val($("#divTable").html());
+        });
+    });
+    
     $('#monthButtonSub').click(function() {
         $('#monthButtonSub').addClass('active');
         $('#yearButtonSub').removeClass('active');
@@ -334,6 +384,10 @@ $(document).ready(function(){
     });
 
     $('#isVacation, #isMedicalLeave').change(function() {
+        updateDisplay();
+    });
+
+    $('#applyFilters').on('click', function() {
         updateDisplay();
     });
 });
