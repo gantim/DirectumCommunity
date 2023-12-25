@@ -22,6 +22,7 @@
         <PackageReference Include="Microsoft.OData.Edm" Version="7.10.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0"/>
+        <PackageReference Include="NPOI" Version="2.6.2" />
         <PackageReference Include="Simple.OData.Client" Version="6.0.1"/>
         <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
     </ItemGroup>

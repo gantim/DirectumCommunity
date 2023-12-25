@@ -390,4 +390,51 @@ $(document).ready(function(){
     $('#applyFilters').on('click', function() {
         updateDisplay();
     });
+
+    $('#exportBtn').on('click', function(e) {
+        let year = currentDate.getFullYear();
+        let month = currentDate.getMonth() + 1;
+        
+        const isVacation = $('#isVacation').is(':checked') ? 1 : 0;
+        const isMedicalLeave = $('#isMedicalLeave').is(':checked') ? 1 : 0;
+        const employeeId = $('#fioFilter').val() === '' ? 0 : $('#fioFilter').val();
+        const jobTitleId = $('#jobTitleFilter').val() === '' ? 0 : $('#jobTitleFilter').val();
+        const departmentId = $('#departmentFilter').val() === '' ? 0 : $('#departmentFilter').val();
+
+        let requestData = {
+            year: year,
+            month: month,
+            filter: {
+                IsVacation: isVacation,
+                IsMedicalLeave: isMedicalLeave,
+                EmployeeId: employeeId,
+                JobTitleId: jobTitleId,
+                DepartmentId: departmentId
+            }
+        };
+
+        let request = JSON.stringify(requestData);
+        
+        $.ajax({
+            url: '/Substitutions/ExportToExcel',
+            method: 'POST',
+            data: request,
+            contentType: 'application/json',
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                let downloadLink = document.createElement('a');
+                downloadLink.href = window.URL.createObjectURL(response);
+                downloadLink.download = 'substitutions.xls';
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
 });

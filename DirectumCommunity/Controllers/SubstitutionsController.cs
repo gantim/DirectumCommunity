@@ -3,6 +3,8 @@ using DirectumCommunity.Models.ViewModels;
 using DirectumCommunity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace DirectumCommunity.Controllers;
 
@@ -10,6 +12,7 @@ namespace DirectumCommunity.Controllers;
 public class SubstitutionsController : BaseController
 {
     private readonly SubstitutionService _substitutionService;
+    private readonly ExcelService _excelService;
     private readonly ILogger<SubstitutionsController> _logger;
 
     public SubstitutionsController(ILogger<SubstitutionsController> logger,
@@ -19,10 +22,12 @@ public class SubstitutionsController : BaseController
     {
         _logger = logger;
         _substitutionService = substitutionService;
+        _excelService = new ExcelService();
     }
     
     public async Task<IActionResult> Index()
     {
+        await GetNavbarData();
         var filters = await _substitutionService.GetFilters();
         ViewBag.Title = "Календарь отсутствий";
         return View(filters);
@@ -43,10 +48,12 @@ public class SubstitutionsController : BaseController
             await _substitutionService.GetAllSubstitutionsInYear(request.Year, request.Filter);
         return Json(substitutions);
     }
-
+    
     [HttpPost]
-    public FileResult ExportToExcel(string htmlTable)
+    public async Task<FileResult> ExportToExcel([FromBody] SubstitutionRequest request)
     {
-        return File(Encoding.ASCII.GetBytes(htmlTable), "application/vnd.ms-excel", "test.xlsx");
+        var list = await _substitutionService.GetAllSubstitutionsInMonth(request.Year, request.Month, request.Filter);
+        var excel = _excelService.CreateSubstitutionInMonth(list, request.Year, request.Month);
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "substitutions.xls");
     }
 }

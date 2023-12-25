@@ -20,6 +20,7 @@ public class EmployeesController : BaseController
     
     public async Task<IActionResult> Index(int? page)
     {
+        await GetNavbarData();
         var pageNumber = page ?? 1;
         var pageSize = 6;
         

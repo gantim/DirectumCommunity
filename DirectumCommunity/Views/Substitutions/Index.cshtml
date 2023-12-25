@@ -53,11 +53,7 @@
             <span class="month-header" id="currentDateBox"></span>
         </div>
         <div class="col d-flex align-items-center">
-            <form asp-action="ExportToExcel" asp-controller="Substitutions" method="post">
-                <input type="hidden" name="htmlTable"/>
-                <input type="submit" id="buttonExport" class="export-data-text" value="Выгрузить данные"/>
-            </form>
-            @*<a class="export-data-text" id="exportBtn">Выгрузить данные</a>*@
+            <a class="export-data-text" id="exportBtn">Выгрузить данные</a>
         </div>
         <div class="col">
             <div class="dropdown custom-dropdown">

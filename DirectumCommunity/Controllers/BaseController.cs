@@ -10,10 +10,9 @@ public class BaseController : Controller
     public BaseController(EmployeeService employeeService)
     {
         EmployeeService = employeeService;
-        Task.Run(async () => await GetNavbarData());
     }
     
-    private async Task GetNavbarData()
+    public async Task GetNavbarData()
     {
         var login = User.Identity?.Name;
         var navbarData = await EmployeeService.GetNavbarDataByLogin(login);

@@ -375,6 +375,7 @@ body, .container-fluid, h1, a, span, input {
   font-weight: 400;
   text-decoration: underline;
   word-wrap: break-word;
+  cursor: pointer;
 }
 
 .substitutions-avatar{
