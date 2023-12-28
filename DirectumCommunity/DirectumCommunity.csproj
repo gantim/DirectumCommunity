@@ -31,6 +31,8 @@
         <_ContentIncludedByDefault Remove="Views\Directum\Index.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Directum\Privacy.cshtml"/>
         <_ContentIncludedByDefault Remove="Views\Directum\Workers.cshtml"/>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\fullcalendar\timegrid\index.global.js" />
+        <_ContentIncludedByDefault Remove="wwwroot\lib\fullcalendar\timegrid\index.global.min.js" />
     </ItemGroup>
     
     <ItemGroup>

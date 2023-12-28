@@ -470,3 +470,18 @@ body, .container-fluid, h1, a, span, input {
   font-weight: 700;
   word-wrap: break-word;
 }
+
+.fc-col-header-cell {
+  background-color: #7CAAE5D9;
+  color: #000000;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+.fc-col-header-cell a {
+  /* Стили для ссылки внутри ячейки заголовка */
+  /* Примеры стилей */
+  text-decoration: none;
+  color: #000000;/* Убирает подчеркивание ссылки */
+  /* Другие настройки стилей */
+}
