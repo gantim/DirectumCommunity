@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231229223849_EditMeetings2")]
+    partial class EditMeetings2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,12 +317,6 @@ namespace DirectumCommunity.Migrations
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
-
-                    b.Property<int?>("PresidentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SecretaryId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");

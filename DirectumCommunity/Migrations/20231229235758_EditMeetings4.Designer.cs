@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231229235758_EditMeetings4")]
+    partial class EditMeetings4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,15 +600,15 @@ namespace DirectumCommunity.Migrations
 
             modelBuilder.Entity("EmployeeMeeting", b =>
                 {
-                    b.Property<int>("EmployeesId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("MeetingsId")
                         .HasColumnType("integer");
 
-                    b.HasKey("EmployeesId", "MeetingsId");
+                    b.Property<int>("MembersId")
+                        .HasColumnType("integer");
 
-                    b.HasIndex("MeetingsId");
+                    b.HasKey("MeetingsId", "MembersId");
+
+                    b.HasIndex("MembersId");
 
                     b.ToTable("MeetingMembers", (string)null);
                 });
@@ -817,15 +820,15 @@ namespace DirectumCommunity.Migrations
 
             modelBuilder.Entity("EmployeeMeeting", b =>
                 {
-                    b.HasOne("DirectumCommunity.Models.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DirectumCommunity.Models.Meeting", null)
                         .WithMany()
                         .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DirectumCommunity.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

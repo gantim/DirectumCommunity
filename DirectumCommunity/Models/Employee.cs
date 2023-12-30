@@ -50,6 +50,8 @@ public class Employee
     public Organization? Organization { get; set; }
     public DateTimeOffset? CreateDate { get; set; }
     
+    public List<Meeting> Meetings { get; set; }
+    
     public override string ToString()
     {
         return $"{Name}";

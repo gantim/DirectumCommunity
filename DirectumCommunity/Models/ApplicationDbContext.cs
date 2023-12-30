@@ -31,5 +31,11 @@ public sealed class ApplicationDbContext : IdentityDbContext<DirectumUser>
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+            modelBuilder.ApplyConfiguration(new MeetingConfiguration());
+            
+            modelBuilder.Entity<Meeting>()
+                .HasMany(c => c.Employees)
+                .WithMany(s => s.Meetings)
+                .UsingEntity(j => j.ToTable("MeetingMembers"));
         }
 }

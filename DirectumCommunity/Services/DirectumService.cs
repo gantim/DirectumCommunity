@@ -29,6 +29,93 @@ public class DirectumService : IDirectumService
         _password = password;
     }
 
+    [JobDisplayName("Импорт данных о совещаниях")]
+    public async Task ImportMeetings(PerformContext context)
+    {
+        _context = context;
+        _context.WriteLine("Начало импорта данных о совещаниях из DirectumRx...");
+
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var authenticationHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_login}:{_password}"));
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", authenticationHeaderValue);
+
+                HttpResponseMessage response = await client.GetAsync(
+                    $"{_host}IMeetings?$expand=Secretary,President,Members($expand=Member)");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+
+                    var result = JsonConvert.DeserializeObject<MeetingsResponse>(json);
+
+                    if (result?.Value != null)
+                    {
+                        await using (var db = new ApplicationDbContext())
+                        {
+                            var employeeIds = result.Value.SelectMany(meeting => meeting.GetAllEmployeesIds())
+                                .Distinct().ToList();
+                            var existingIds = db.Employees
+                                .Where(e => employeeIds.Contains(e.Id))
+                                .Select(e => e.Id)
+                                .ToList();
+
+                            if (employeeIds.Except(existingIds).Any())
+                                throw new Exception(
+                                    "Один или несколько сотрудников не импортированы. Сначала выполните импорт сотрудников.");
+
+                            var progressBar = context.WriteProgressBar();
+                            foreach (var meeting in result.Value.WithProgress(progressBar))
+                            {
+                                try
+                                {
+                                    _context.WriteLine($"Импорт совещания: {meeting.Name}");
+                                    
+                                    var existingMeeting = await db.Meetings.FindAsync(meeting.Id);
+
+                                    if (existingMeeting != null)
+                                    {
+                                        existingMeeting.Update(meeting);
+                                    }
+                                    else
+                                    {
+                                        db.Meetings.Add(meeting);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    _context.WriteLine($"Ошибка импорта {meeting.Name}: {e.Message} ",
+                                        ConsoleTextColor.Red);
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        _context.WriteLine($"Данные для импорта отсутствуют");
+                    }
+                }
+                else
+                {
+                    _context.WriteLine($"Ошибка при выполнении запроса: {response.StatusCode}", ConsoleTextColor.Red);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            _context.WriteLine($"Ошибка: {e.Message}", ConsoleTextColor.Red);
+        }
+        finally
+        {
+            _context.WriteLine($"Импорт совещаний завершен...", ConsoleTextColor.Green);
+        }
+    }
+
     [JobDisplayName("Импорт данных о сотрудниках")]
     public async Task ImportEmployees(PerformContext context)
     {

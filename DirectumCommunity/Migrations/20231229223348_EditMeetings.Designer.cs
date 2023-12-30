@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231229223348_EditMeetings")]
+    partial class EditMeetings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,6 +309,9 @@ namespace DirectumCommunity.Migrations
                     b.Property<double?>("Duration")
                         .HasColumnType("double precision");
 
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
@@ -315,16 +321,12 @@ namespace DirectumCommunity.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<int?>("PresidentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SecretaryId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Meetings");
                 });
@@ -595,21 +597,6 @@ namespace DirectumCommunity.Migrations
                     b.ToTable("Substitutions");
                 });
 
-            modelBuilder.Entity("EmployeeMeeting", b =>
-                {
-                    b.Property<int>("EmployeesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MeetingsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("EmployeesId", "MeetingsId");
-
-                    b.HasIndex("MeetingsId");
-
-                    b.ToTable("MeetingMembers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -780,6 +767,13 @@ namespace DirectumCommunity.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("DirectumCommunity.Models.Meeting", b =>
+                {
+                    b.HasOne("DirectumCommunity.Models.Employee", null)
+                        .WithMany("Meetings")
+                        .HasForeignKey("EmployeeId");
+                });
+
             modelBuilder.Entity("DirectumCommunity.Models.Person", b =>
                 {
                     b.HasOne("DirectumCommunity.Models.City", "City")
@@ -813,21 +807,6 @@ namespace DirectumCommunity.Migrations
                     b.Navigation("Substitute");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EmployeeMeeting", b =>
-                {
-                    b.HasOne("DirectumCommunity.Models.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DirectumCommunity.Models.Meeting", null)
-                        .WithMany()
-                        .HasForeignKey("MeetingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -879,6 +858,11 @@ namespace DirectumCommunity.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DirectumCommunity.Models.Employee", b =>
+                {
+                    b.Navigation("Meetings");
                 });
 #pragma warning restore 612, 618
         }
