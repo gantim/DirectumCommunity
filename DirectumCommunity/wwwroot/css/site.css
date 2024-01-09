@@ -485,3 +485,17 @@ body, .container-fluid, h1, a, span, input {
   color: #000000;/* Убирает подчеркивание ссылки */
   /* Другие настройки стилей */
 }
+
+.events-calendar-popover-field-name{
+  color: black;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  word-wrap: break-word;
+}
+
+.popover-link{
+  color: #7CAAE5;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}

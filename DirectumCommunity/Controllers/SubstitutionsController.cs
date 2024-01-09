@@ -13,14 +13,12 @@ public class SubstitutionsController : BaseController
 {
     private readonly SubstitutionService _substitutionService;
     private readonly ExcelService _excelService;
-    private readonly ILogger<SubstitutionsController> _logger;
 
     public SubstitutionsController(ILogger<SubstitutionsController> logger,
         EmployeeService employeeService,
         SubstitutionService substitutionService)
     : base(employeeService)
     {
-        _logger = logger;
         _substitutionService = substitutionService;
         _excelService = new ExcelService();
     }

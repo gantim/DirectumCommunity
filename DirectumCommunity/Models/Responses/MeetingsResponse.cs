@@ -2,5 +2,5 @@
 
 public class MeetingsResponse
 {
-    public List<Meeting>? Value { get; set; }
+    public List<MeetingModel>? Value { get; set; }
 }

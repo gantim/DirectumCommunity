@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DirectumCommunity.Models;
 
-public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
+public class MeetingConfiguration : IEntityTypeConfiguration<MeetingModel>
 {
-    public void Configure(EntityTypeBuilder<Meeting> builder)
+    public void Configure(EntityTypeBuilder<MeetingModel> builder)
     {
         builder.Ignore(e => e.President);
         builder.Ignore(e => e.Secretary);

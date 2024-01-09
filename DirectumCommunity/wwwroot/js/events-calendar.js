@@ -14,62 +14,38 @@
         dayHeaderContent: (args) => {
             return moment(args.date).locale('ru').format('dddd').toUpperCase();
         },
-        events: [
-            {
-                "title": "Презентация бюджета на 2024 год",
-                "start": "2023-12-25T09:00:00",
-                "end": "2023-12-25T10:30:00",
-                "description": "Обсуждение и утверждение бюджета на следующий финансовый год"
-            },
-            {
-                "title": "Конференция по инновациям в технологиях",
-                "start": "2023-12-25T13:00:00",
-                "end": "2023-12-25T15:00:00",
-                "description": "Доклады и обсуждения современных инновационных технологий"
-            },
-            {
-                "title": "Праздничный обед для сотрудников",
-                "start": "2023-12-26T12:00:00",
-                "end": "2023-12-26T14:00:00",
-                "description": "Праздничный обед в честь предстоящего Нового года для всех сотрудников компании"
-            },
-            {
-                "title": "Совещание по маркетинговой стратегии",
-                "start": "2023-12-27T10:00:00",
-                "end": "2023-12-27T12:00:00",
-                "description": "Обсуждение планов маркетинговой стратегии на ближайший квартал"
-            },
-            {
-                "title": "Консультация по улучшению рабочих процессов",
-                "start": "2023-12-28T09:30:00",
-                "end": "2023-12-28T11:00:00",
-                "description": "Консультация с экспертами по оптимизации и улучшению рабочих процессов"
-            },
-            {
-                "title": "Тренинг по лидерству",
-                "start": "2023-12-29T14:00:00",
-                "end": "2023-12-29T16:00:00",
-                "description": "Обучение навыкам лидерства и управления командой"
-            },
-            {
-                "title": "Интервью с кандидатом на должность разработчика",
-                "start": "2023-12-30T11:30:00",
-                "end": "2023-12-30T12:30:00",
-                "description": "Собеседование с потенциальным кандидатом на вакансию разработчика ПО"
-            },
-            {
-                "title": "Сбор сотрудников для поздравления с Новым годом",
-                "start": "2023-12-31T16:30:00",
-                "end": "2023-12-31T17:00:00",
-                "description": "Объединение всех сотрудников для поздравления с наступающим Новым годом"
-            },
-            {
-                "title": "Новогодний корпоратив",
-                "start": "2023-12-31T20:00:00",
-                "end": "2023-12-31T23:59:59",
-                "description": "Праздничное мероприятие для сотрудников и партнеров компании"
-            }
-        ]
+        eventDidMount: function(info) {
+            var tooltip = new bootstrap.Popover(info.el, {
+                title: info.event.title,
+                content: info.event.extendedProps.description,
+                trigger: 'hover',
+                placement: 'auto',
+                container: 'body',
+                html: true,
+                delay: { "show": 100, "hide": 50000 }
+            });
+
+            $(document).on('mouseenter', '.popover-link', function(event) {
+                $('.popover-link').popover('hide');
+                var popover = new bootstrap.Popover(event.target, {
+                    content: info.event.extendedProps.members,
+                    trigger: 'hover',
+                    placement: 'auto',
+                    container: 'body',
+                    html: true,
+                    delay: { "show": 100, "hide": 1500 }
+                });
+                popover.show();
+            });
+
+            $(document).on('click', '#calendar', function(event) {
+                var popover = $(event.target).closest('.popover');
+                if (!popover.length) {
+                    $('.popover').popover('hide');
+                }
+            });
+        },
+        events: window.location.protocol + '//' + window.location.host + '/EventsCalendar/GetMeetings'
     });
     calendar.render();
 });

@@ -68,14 +68,47 @@ public class DirectumService : IDirectumService
                                     "Один или несколько сотрудников не импортированы. Сначала выполните импорт сотрудников.");
 
                             var progressBar = context.WriteProgressBar();
-                            foreach (var meeting in result.Value.WithProgress(progressBar))
+                            foreach (var meetingModel in result.Value.WithProgress(progressBar))
                             {
                                 try
                                 {
-                                    _context.WriteLine($"Импорт совещания: {meeting.Name}");
-                                    
-                                    var existingMeeting = await db.Meetings.FindAsync(meeting.Id);
+                                    _context.WriteLine($"Импорт совещания: {meetingModel.Name}");
 
+                                    var existingMeeting = await db.Meetings.FindAsync(meetingModel.Id);
+
+                                    var meeting = new Meeting()
+                                    {
+                                        Id = meetingModel.Id,
+                                        Name = meetingModel.Name,
+                                        Location = meetingModel.Location,
+                                        Note = meetingModel.Note,
+                                        DisplayName = meetingModel.DisplayName,
+                                        Duration = meetingModel.Duration,
+                                        Status = meetingModel.Status,
+                                        SecretaryId = meetingModel.Secretary.Id,
+                                        PresidentId = meetingModel.President.Id,
+                                        DateTime = meetingModel.DateTime
+                                    };
+
+                                    var members = meetingModel.Members
+                                        .Select(m => m.Member)
+                                        .DistinctBy(m => m.Id)
+                                        .ToList();
+
+                                    var existingMeetingMembers =
+                                        db.MeetingMembers.Where(mm => mm.MeetingsId == meeting.Id);
+
+                                    db.MeetingMembers.RemoveRange(existingMeetingMembers);
+                                    
+                                    foreach (var member in members)
+                                    {
+                                        db.MeetingMembers.Add(new MeetingMember()
+                                        {
+                                            MeetingsId = meeting.Id,
+                                            EmployeesId = member.Id
+                                        });
+                                    }
+                                    
                                     if (existingMeeting != null)
                                     {
                                         existingMeeting.Update(meeting);
@@ -87,7 +120,7 @@ public class DirectumService : IDirectumService
                                 }
                                 catch (Exception e)
                                 {
-                                    _context.WriteLine($"Ошибка импорта {meeting.Name}: {e.Message} ",
+                                    _context.WriteLine($"Ошибка импорта {meetingModel.Name}: {e.Message} ",
                                         ConsoleTextColor.Red);
                                 }
                             }

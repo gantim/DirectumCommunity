@@ -3,6 +3,7 @@ using System;
 using DirectumCommunity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectumCommunity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240109202131_EditMeetings6")]
+    partial class EditMeetings6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cities", (string)null);
+                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Department", b =>
@@ -83,7 +86,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.DirectumUser", b =>
@@ -233,7 +236,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.JobTitle", b =>
@@ -255,7 +258,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JobTitles", (string)null);
+                    b.ToTable("JobTitles");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Login", b =>
@@ -286,7 +289,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logins", (string)null);
+                    b.ToTable("Logins");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Meeting", b =>
@@ -330,7 +333,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasIndex("SecretaryId");
 
-                    b.ToTable("Meetings", (string)null);
+                    b.ToTable("Meetings");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Organization", b =>
@@ -406,7 +409,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations", (string)null);
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Person", b =>
@@ -499,7 +502,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("Persons", (string)null);
+                    b.ToTable("Persons");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.PersonChange", b =>
@@ -531,7 +534,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("PersonChanges", (string)null);
+                    b.ToTable("PersonChanges");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.PersonalPhoto", b =>
@@ -552,7 +555,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PersonalPhotos", (string)null);
+                    b.ToTable("PersonalPhotos");
                 });
 
             modelBuilder.Entity("DirectumCommunity.Models.Substitution", b =>
@@ -596,7 +599,7 @@ namespace DirectumCommunity.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Substitutions", (string)null);
+                    b.ToTable("Substitutions");
                 });
 
             modelBuilder.Entity("EmployeeMeeting", b =>

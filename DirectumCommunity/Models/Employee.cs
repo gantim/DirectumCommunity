@@ -51,6 +51,7 @@ public class Employee
     public DateTimeOffset? CreateDate { get; set; }
     
     public List<Meeting> Meetings { get; set; }
+    public List<MeetingMember> MeetingMembers { get; set; } = new();
     
     public override string ToString()
     {

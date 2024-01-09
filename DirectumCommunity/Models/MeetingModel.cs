@@ -2,7 +2,7 @@
 
 namespace DirectumCommunity.Models;
 
-public class Meeting
+public class MeetingModel
 {
     private DateTimeOffset? dateTime;
     public int Id { get; set; }
@@ -43,13 +43,6 @@ public class Meeting
     
     public List<Employee> Employees { get; set; }
     public List<MemberResponse> Members { get; set; } = new();
-
-    public void FillEntity()
-    {
-        if (Secretary == null || President == null) return;
-        SecretaryId = Secretary.Id;
-        PresidentId = President.Id;
-    }
     
     public List<int> GetAllEmployeesIds()
     {
@@ -64,19 +57,5 @@ public class Meeting
         }
 
         return ids;
-    }
-
-    public void Update(Meeting meeting)
-    {
-        Name = meeting.Name;
-        Location = meeting.Location;
-        Note = meeting.Note;
-        DisplayName = meeting.DisplayName;
-        Duration = meeting.Duration;
-        Status = meeting.Status;
-        SecretaryId = meeting.SecretaryId;
-        PresidentId = meeting.PresidentId;
-        DateTime = meeting.DateTime;
-        Employees = meeting.Employees;
     }
 }
