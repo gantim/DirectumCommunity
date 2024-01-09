@@ -40,15 +40,17 @@ public class Meeting
                 dateTime = null;
         }
     }
-
-    private List<Employee> _employees = new();
-    public List<Employee> Employees
-    {
-        get => _employees;
-        set => _employees = Members.Any() ? Members.Select(m => m.Member).ToList() : value;
-    }
+    
+    public List<Employee> Employees { get; set; }
     public List<MemberResponse> Members { get; set; } = new();
 
+    public void FillEntity()
+    {
+        if (Secretary == null || President == null) return;
+        SecretaryId = Secretary.Id;
+        PresidentId = President.Id;
+    }
+    
     public List<int> GetAllEmployeesIds()
     {
         var ids = new List<int>();
