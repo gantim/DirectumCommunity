@@ -48,6 +48,7 @@
   margin-left: 20px;
   margin-right: 20px;
   color: #ffffff;
+  cursor: pointer;
 }
 
 .circle-text-inner {
@@ -486,16 +487,20 @@ body, .container-fluid, h1, a, span, input {
   /* Другие настройки стилей */
 }
 
-.events-calendar-popover-field-name{
+.events-calendar-popover-field-name {
   color: black;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   word-wrap: break-word;
 }
 
-.popover-link{
+.popover-link {
   color: #7CAAE5;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   text-decoration: underline;
+}
+
+.notify-img {
+  cursor: pointer;
 }

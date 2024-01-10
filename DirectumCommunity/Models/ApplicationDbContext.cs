@@ -17,6 +17,8 @@ public sealed class ApplicationDbContext : IdentityDbContext<DirectumUser>
     public DbSet<PersonChange> PersonChanges => Set<PersonChange>();
     public DbSet<Substitution> Substitutions => Set<Substitution>();
     public DbSet<MeetingMember> MeetingMembers => Set<MeetingMember>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationRead> NotificationReads => Set<NotificationRead>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

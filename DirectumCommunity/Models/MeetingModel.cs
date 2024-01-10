@@ -47,15 +47,16 @@ public class MeetingModel
     public List<int> GetAllEmployeesIds()
     {
         var ids = new List<int>();
-
+        
         if (SecretaryId != null) ids.Add(SecretaryId.Value);
         if (PresidentId != null) ids.Add(PresidentId.Value);
         if (Members.Any())
         {
+            //TODO Если добавлять в директуме целый отдел, то приходит только id отдела, нужно учесть этот момент
             var memberIds = Members.Select(m => m.Member.Id);
             ids.AddRange(memberIds);
         }
 
-        return ids;
+        return ids.Distinct().ToList();
     }
 }

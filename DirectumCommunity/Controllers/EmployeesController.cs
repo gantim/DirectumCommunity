@@ -12,8 +12,9 @@ public class EmployeesController : BaseController
     private readonly ILogger<EmployeesController> _logger;
 
     public EmployeesController(ILogger<EmployeesController> logger,
-        EmployeeService employeeService)
-    : base(employeeService)
+        EmployeeService employeeService,
+        NotificationService notificationService)
+    : base(employeeService, notificationService)
     {
         _logger = logger;
     }

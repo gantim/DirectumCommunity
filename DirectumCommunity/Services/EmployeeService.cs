@@ -6,6 +6,8 @@ namespace DirectumCommunity.Services;
 
 public class EmployeeService
 {
+    private readonly NotificationService _notificationService = new();
+    
     public async Task<int> GetTotalCount()
     {
         await using (var db = new ApplicationDbContext())
@@ -129,6 +131,7 @@ public class EmployeeService
         var userName = $"{employee?.Person.FirstName} {employee?.Person.LastName}";
         var avatar = await GetEmployeePhoto(employee);
         var initials = $"{employee.Person.FirstName?.FirstOrDefault()}{employee.Person.LastName?.FirstOrDefault()}";
+        var notificationsCount = await _notificationService.GetNotificationsCount(employee.Id);
 
         return new NavbarData()
         {
@@ -136,7 +139,8 @@ public class EmployeeService
             PersonId = employee.Person.Id,
             Name = userName,
             Avatar = avatar,
-            Initials = initials
+            Initials = initials,
+            NotificationsCount = notificationsCount
         };
     }
 }

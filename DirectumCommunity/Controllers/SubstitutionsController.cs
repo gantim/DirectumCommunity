@@ -16,8 +16,9 @@ public class SubstitutionsController : BaseController
 
     public SubstitutionsController(ILogger<SubstitutionsController> logger,
         EmployeeService employeeService,
-        SubstitutionService substitutionService)
-    : base(employeeService)
+        SubstitutionService substitutionService,
+        NotificationService notificationService)
+    : base(employeeService, notificationService)
     {
         _substitutionService = substitutionService;
         _excelService = new ExcelService();

@@ -55,18 +55,22 @@
                 </div>
                 <div class="col" style="display: flex; flex-direction: row-reverse;">
                     <div class="row" style="align-items: center;">
-                        <div class="col">
+                        
+                        <div class="col notify-img" data-employee-notify-id="@ViewData["EmployeeId"]">
                             <a href="#" style="color: #000000;">
                                 <i class="far fa-bell position-relative fa-2x">
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.75rem;">
-                                        3
-                                        <span class="visually-hidden">New alerts</span>
-                                    </span>
+                                    @if (Convert.ToInt32(ViewData["NotificationsCount"]) != 0)
+                                    {
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger" style="font-size: 0.75rem;">
+                                            @ViewData["NotificationsCount"]
+                                            <span class="visually-hidden">New alerts</span>
+                                        </span>
+                                    }
                                 </i>
                             </a>
                         </div>
                         <div class="col">
-                            <div class="circle-text">
+                            <div class="circle-text employee-info-current" data-employee-id="@ViewData["EmployeeId"]">
                                 @if (string.IsNullOrEmpty(ViewBag.Photo))
                                 {
                                     <span class="circle-text-inner">@ViewBag.Initials</span>
@@ -100,7 +104,9 @@
             <div class="container-fluid">
                 @RenderBody()
             </div>
+            <div id="employeeInfoModal"></div>
             <div id="birthdayNotificationModal"></div>
+            <div id="infoNotificationModal"></div>
         </main>
     </div>
 </div>

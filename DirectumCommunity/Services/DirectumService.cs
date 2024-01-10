@@ -7,7 +7,6 @@ using Hangfire.Console;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Simple.OData.Client;
 
 namespace DirectumCommunity.Services;
 
@@ -16,7 +15,8 @@ public class DirectumService : IDirectumService
     private readonly string _host;
     private readonly string _login;
     private readonly string _password;
-    protected PerformContext _context;
+    private readonly NotificationService _notificationService = new();
+    private PerformContext _context;
 
     public DirectumService(string host, string login, string password)
     {
@@ -116,6 +116,7 @@ public class DirectumService : IDirectumService
                                     else
                                     {
                                         db.Meetings.Add(meeting);
+                                        await _notificationService.AddNotification($"Добавлено новое событие: {meeting.DisplayName}");
                                     }
                                 }
                                 catch (Exception e)

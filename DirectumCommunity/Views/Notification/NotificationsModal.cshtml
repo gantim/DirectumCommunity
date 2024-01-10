@@ -1,0 +1,28 @@
+﻿@model List<Notification>
+
+<div class="modal" id="notificationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Все уведомления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (Model.Any())
+                {
+                    foreach (var notification in Model)
+                    {
+                        <p class="border border-2" style="padding: 5px;">@notification.Message</p>
+                    }
+                }
+                else
+                {
+                    <p class="text-center">Нет уведомлений</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn filter-btn-custom" style="width: auto;">Прочитать все</button>
+            </div>
+        </div>
+    </div>
+</div>

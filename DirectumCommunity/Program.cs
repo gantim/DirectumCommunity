@@ -34,6 +34,7 @@ builder.Services.AddTransient<IDirectumService>(provider =>
 builder.Services.AddTransient<EmployeeService>();
 builder.Services.AddTransient<SubstitutionService>();
 builder.Services.AddTransient<MeetingService>();
+builder.Services.AddTransient<NotificationService>();
 
 builder.Services.AddHangfire(configuration => configuration
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)

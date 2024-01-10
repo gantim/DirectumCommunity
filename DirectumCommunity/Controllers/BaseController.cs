@@ -6,10 +6,12 @@ namespace DirectumCommunity.Controllers;
 public class BaseController : Controller
 {
     public readonly EmployeeService EmployeeService;
+    public readonly NotificationService NotificationService;
     
-    public BaseController(EmployeeService employeeService)
+    public BaseController(EmployeeService employeeService, NotificationService notificationService)
     {
         EmployeeService = employeeService;
+        NotificationService = notificationService;
     }
     
     public async Task GetNavbarData()
@@ -21,5 +23,6 @@ public class BaseController : Controller
         ViewBag.Initials = navbarData.Initials;
         ViewBag.EmployeeId = navbarData.EmployeeId;
         ViewBag.PersonId = navbarData.PersonId;
+        ViewBag.NotificationsCount = navbarData.NotificationsCount;
     }
 }

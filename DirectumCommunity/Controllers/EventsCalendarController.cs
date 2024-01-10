@@ -12,10 +12,12 @@ namespace DirectumCommunity.Controllers;
 public class EventsCalendarController : BaseController
 {
     private readonly MeetingService _meetingService;
-    public EventsCalendarController(MeetingService meetingService, EmployeeService employeeService) 
-        : base(employeeService)
+    public EventsCalendarController(MeetingService meetingService, 
+        EmployeeService employeeService,
+        NotificationService notificationService) 
+        : base(employeeService, notificationService)
     {
-        _meetingService = new MeetingService();
+        _meetingService = meetingService;
     }
     
     [HttpGet]
