@@ -5,6 +5,20 @@ namespace DirectumCommunity.Services;
 
 public class NotificationService
 {
+    public async Task SendBirthdayNotification()
+    {
+        await using (var db = new ApplicationDbContext())
+        {
+            var employeesBirthdays = await db.Employees.Include(p => p.Person).Where(p =>
+                p.Person.DateOfBirth.Value.Day == DateTime.Now.Day && p.Person.DateOfBirth.Value.Month == DateTime.Now.Month).ToListAsync();
+
+            foreach (var item in employeesBirthdays)
+            {
+                await AddNotification($"Сегодня день рождения у {item.Name}!");
+            }
+        }
+    }
+    
     public async Task<int> GetNotificationsCount(int employeeId)
     {
         await using (var db = new ApplicationDbContext())

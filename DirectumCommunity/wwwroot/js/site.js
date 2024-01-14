@@ -87,6 +87,22 @@
             }
         });
     });
+
+    $(document).on('click', '#makeRead', function () {
+        showLoading();
+        let id = $('.notify-img').data('employee-notify-id');
+        $.ajax({
+            url: '/Notification/MakeAsRead',
+            type: 'POST',
+            data: { id: id },
+            success: function (data) {
+                location.reload();
+            },
+            complete: function(data) {
+                hideLoading();
+            }
+        });
+    });
 });
 
 function showLoading() {

@@ -96,7 +96,7 @@ function createEmployeeRows(jsonData, days, type) {
         
         if(type === 1) {
             for (let i = 1; i <= days; i++) {
-                newRow.append(`<td id="cell-${employee.id}-${i}-${currentDate.getMonth() + 1}"></td>`);
+                newRow.append(`<td class="text-center align-middle" id="cell-${employee.id}-${i}-${currentDate.getMonth() + 1}"></td>`);
             }
         }
         else{
@@ -150,9 +150,19 @@ function getDaysInRangeForMonth(startDate, endDate, targetMonth) {
     return daysInRange;
 }
 
+function setBirthDay(employee){
+    let cellId = `#cell-${employee.id}-${employee.birthDay}`;
+    let myImageSrc = "/images/BirthdayCalendarIcon.svg";
+    let imgElement = $("<img>").attr("src", myImageSrc).attr("alt", "Birthday");
+    $(cellId).css('padding', '0');
+    $(cellId).css('margin', '0');
+    $(cellId).append(imgElement);
+}
+
 function highlightCells(jsonData, days, type) {
     if(type === 1) {
         jsonData.forEach(employee => {
+            setBirthDay(employee);
             employee.substitutions.forEach(substitution => {
                 const startDate = new Date(substitution.startDate);
                 const endDate = new Date(substitution.endDate);
@@ -161,9 +171,8 @@ function highlightCells(jsonData, days, type) {
                 for (let current = new Date(startDate); current <= endDate; current.setDate(current.getDate() + 1)) {
                     const day = current.getDate();
                     const month = current.getMonth() + 1;
-
                     const cellId = `#cell-${id}-${day}-${month}`;
-
+                    
                     if (substitution.typeReason === 1) {
                         $(cellId).css('border', 'none');
                         $(cellId).css('background-color', '#CC3A3A');

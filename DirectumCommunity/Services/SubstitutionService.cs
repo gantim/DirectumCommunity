@@ -114,7 +114,8 @@ public class SubstitutionService
                     Id = employee.Id,
                     Avatar = employee.Avatar,
                     Department = employee.Department?.Name,
-                    Name = $"{employee.Person?.LastName} {employee.Person?.FirstName}"
+                    Name = $"{employee.Person?.LastName} {employee.Person?.FirstName}",
+                    BirthDay = $"{employee.Person.DateOfBirth.Value.Day}-{employee.Person.DateOfBirth.Value.Month}"
                 };
 
                 foreach (var substitution in substitutions)
@@ -144,6 +145,7 @@ public class SubstitutionService
                     Name = substitution.Name,
                     Avatar = substitution.Avatar,
                     Department = substitution.Department,
+                    BirthDay = substitution.BirthDay,
                     Substitutions = substitution.Substitutions
                         .Where(item =>
                             ((filter.IsVacation == 1 ||

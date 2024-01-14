@@ -68,6 +68,9 @@ RecurringJob.AddOrUpdate<IDirectumService>("ImportSubstitutions", x => x.ImportS
 RecurringJob.AddOrUpdate<IDirectumService>("ImportMeetings", x => x.ImportMeetings(null), Cron.Hourly,
     new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
+RecurringJob.AddOrUpdate<NotificationService>("SendBirthdayNotification", x => x.SendBirthdayNotification(), Cron.Daily,
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
